@@ -19,7 +19,9 @@
   "homepage": "https://github.com/Aman-garg-IITian/EWYL-Earn-While-You-Learn-#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.5.0",
-    "mongoose-type-email": "^1.1.2"
+    "mongoose-type-email": "^1.1.2",
+    "passport": "^0.6.0"
   }
 }
