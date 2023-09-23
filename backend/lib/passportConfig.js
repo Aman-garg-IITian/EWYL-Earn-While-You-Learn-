@@ -15,37 +15,37 @@ const filterJson = (obj, unwantedKeys) => {
 };
 
 passport.use(
-    new LocalStrategy(
-      {
-        usernameField: "email",
-        passReqToCallback: true,
-      },
-      (req, email, password, done, res) => {
-        User.findOne({ email: email }, (err, user) => {
-          if (err) {
-            return done(err);
-          }
-          if (!user) {
-            return done(null, false, {
-              message: "User does not exist",
-            });
-          }
-  
-          user
-            .login(password)
-            .then(() => {
-              user["_doc"] = filterJson(user["_doc"], ["password", "__v"]);
-              return done(null, user);
-            })
-            .catch((err) => {
-              return done(err, false, {
-                message: "Password is incorrect.",
-              });
-            });
-        });
+  new LocalStrategy(
+    {
+      usernameField: "email",
+      passReqToCallback: true,
+    },
+    async (req, email, password, done) => {
+      try {
+        const user = await User.findOne({ email: email });
+        if (!user) {
+          return done(null, false, {
+            message: "User does not exist",
+          });
+        }
+        try{
+            await user.login(password);
+            const filteredUser = filterJson(user.toObject(), ["password", "__v"]);
+            // Filter out sensitive fields like password and __v from the user object
+            return done(null, filteredUser);
+        }catch(err){
+          return done(null, false, {
+            message: "Password is incorrect.",
+          });
+        } 
+      } catch (err) {
+        return done(err);
       }
-    )
+    }
+  )
 );
+
+
   
 passport.use(
     new JWTStrategy(
