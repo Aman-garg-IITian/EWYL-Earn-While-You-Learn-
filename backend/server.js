@@ -7,7 +7,8 @@ import cors from "cors";
 import fs from "fs/promises";
 
 import authRoutes from "./routes/authRoutes.js";
-
+import downloadRoutes from "./routes/downloadRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 mongoose.connect("mongodb://localhost:27017/jobPortal")
   .then(() => console.log("Connected to DB"))
   .catch((err) => console.error(err));
@@ -41,7 +42,7 @@ async function initializeDirectories() {
 initializeDirectories();
 
 const app = express();
-const port = 4444;
+const port = 4442;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -51,6 +52,8 @@ app.use(express.json());
 app.use(passportConfig.initialize());
 
 app.use("/auth", authRoutes);
+app.use("/down",downloadRoutes);
+app.use("/up",uploadRoutes);
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}!`);
