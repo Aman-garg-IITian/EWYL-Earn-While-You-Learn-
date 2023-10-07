@@ -250,7 +250,9 @@ router.post("/resume", (req, res) => {
       handleMulterError(err, req, res);
     } else {
       // File uploaded successfully
-      res.send("File uploaded");
+      res.send({
+        message: "File uploaded successfully"
+      });
     }
   });
 });

@@ -1,11 +1,14 @@
 import express from "express";
 import fs from "fs/promises";
 import path from "path";
+import { fileURLToPath } from 'url';
 
 const router = express.Router();
-
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 router.get("/resume/:file", async (req, res) => {
+  console.log(req.params.file);
   const address = path.join(__dirname, `../uploads/${req.params.file}`);
+  console.log(address);
   try {
     await fs.access(address, fs.F_OK);
     res.sendFile(address);
