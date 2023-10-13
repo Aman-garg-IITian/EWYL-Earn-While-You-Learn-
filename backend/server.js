@@ -9,6 +9,7 @@ import fs from "fs/promises";
 import authRoutes from "./routes/authRoutes.js";
 import downloadRoutes from "./routes/downloadRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import apiRoutes from "./routes/apiRoutes.js";
 mongoose.connect("mongodb://localhost:27017/jobPortal")
   .then(() => console.log("Connected to DB"))
   .catch((err) => console.error(err));
@@ -54,6 +55,7 @@ app.use(passportConfig.initialize());
 app.use("/auth", authRoutes);
 app.use("/down",downloadRoutes);
 app.use("/up",uploadRoutes);
+app.use("/api", apiRoutes);
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}!`);
