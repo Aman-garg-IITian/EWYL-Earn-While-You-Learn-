@@ -245,6 +245,147 @@ router.delete("/jobs/:id", jwtAuth, async(req, res)=>{
         res.status(400).json({err});
     }
 });
+router.get("/user", jwtAuth, async (req, res) => {
+    const user = req.user;
+    console.log(user);
+    try {
+      if (user.type === "recruiter") {
+        const recruiter = await Recruiter.findOne({ userId: user._id });
+        console.log(recruiter);
+        if (recruiter === null) {
+          return res.status(404).json({
+            message: "User does not exist",
+          });
+        }
+  
+        res.json(recruiter);
+      } else {
+        const jobApplicant = await JobApplicant.findOne({ userId: user._id });
+  
+        if (jobApplicant === null) {
+          return res.status(404).json({
+            message: "User does not exist",
+          });
+        }
+  
+        res.json(jobApplicant);
+      }
+    } catch (err) {
+      res.status(400).json(err);
+    }
+  });
+  router.get("/user/:id", jwtAuth, async (req, res) => {
+    try {
+      const userData = await User.findOne({ _id: req.params.id }).exec();
+      console.log(userData);
+      if (userData === null) {
+        return res.status(404).json({
+          message: "User does not exist",
+        });
+      }
+      
+      if (userData.type === "recruiter") {
+
+        const recruiter = await Recruiter.findOne({ userId: userData._id }).exec();
+        console.log(recruiter);
+        if (recruiter === null) {
+          return res.status(404).json({
+            message: "User does not exist",
+          });
+        }
+  
+        res.json(recruiter);
+      } else {
+        const jobApplicant = await JobApplicant.findOne({ userId: userData._id }).exec();
+  
+        if (jobApplicant === null) {
+          return res.status(404).json({
+            message: "User does not exist",
+          });
+        }
+  
+        res.json(jobApplicant);
+      }
+    } catch (err) {
+      res.status(400).json(err);
+    }
+  });
+  
+  router.put("/user", jwtAuth, async (req, res) => {
+    console.log(req)
+    const user = req.user;
+    const data = req.body;
+  
+    try {
+      if (user.type === "recruiter") {
+        
+        const recruiter = await Recruiter.findOne({ userId: user._id }).exec();
+  
+        if (recruiter === null) {
+            console.log("updating recruiter");
+
+          return res.status(404).json({
+            message: "User does not exist",
+          });
+        }
+  
+        // Update recruiter's information if provided
+        if (data.name) {
+          recruiter.name = data.name;
+        }
+        if (data.contactNumber) {
+          recruiter.contactNumber = data.contactNumber;
+        }
+        if (data.bio) {
+          recruiter.bio = data.bio;
+        }
+  
+        // Save the updated recruiter's information
+        await recruiter.save();
+  
+        res.json({
+          message: "User information updated successfully",
+        });
+      } else {
+        // Find the job applicant by user ID
+        const jobApplicant = await JobApplicant.findOne({ userId: user._id }).exec();
+  
+        if (jobApplicant === null) {
+          return res.status(404).json({
+            message: "User does not exist",
+          });
+        }
+  
+        // Update job applicant's information if provided
+        if (data.name) {
+          jobApplicant.name = data.name;
+        }
+        if (data.education) {
+          jobApplicant.education = data.education;
+        }
+        if (data.skills) {
+          jobApplicant.skills = data.skills;
+        }
+        if (data.resume) {
+          jobApplicant.resume = data.resume;
+        }
+        if (data.profile) {
+          jobApplicant.profile = data.profile;
+        }
+  
+        // Save the updated job applicant's information
+        await jobApplicant.save();
+  
+        res.json({
+          message: "User information updated successfully",
+        });
+      }
+    } catch (err) {
+      res.status(400).json(err);
+    }
+  });
+  
+  export default router;
+  
 
 
-export default router;
