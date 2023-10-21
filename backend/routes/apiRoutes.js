@@ -483,6 +483,181 @@ router.post("/jobs/:id/applications", jwtAuth, async (req, res) => {
       res.status(400).json(err);
     }
   });
+
+router.get("/jobs/:id/applications", jwtAuth, async (req, res) => {
+  console.log("yes its important################");
+  const user = req.user;
+  console.log(req);
+  if(user.type !== "recruiter"){
+    return res.status(401).json({
+      message: "You don't have permissions to view applications",
+    });
+  }
+  const jobId = req.param.id;
+
+  let findParams = {
+    jobId: jobId,
+    recruiterId: user._id,
+  };
+  let sortParams = {};
+
+  if (req.query.status) {
+    findParams.status = req.query.status;
+  }
+
+  try{
+    const applications = await Application.find(findParams).exec();
+    res.json(applications);
+  }catch(err){
+    res.status(400).json(err);
+  }
+  });
+
+// this function gest the lsit of jobs for whicha a user has applied
+router.get("/applications", jwtAuth, async (req, res) => {
+  const user = req.user;
+  console.log("it uses");
+  console.log(req.body);
+  try{
+    const pipeline = [
+      {
+        $lookup: {
+          from: "jobapplicantinfos",
+          localField: "userId",
+          foreignField: "userId",
+          as: "jobApplicant",
+        },
+      },
+      { $unwind: "$jobApplicant" },
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "jobId",
+          foreignField: "_id",
+          as: "job",
+        },
+      },
+      { $unwind: "$job" },
+      {
+        $lookup: {
+          from: "recruiterinfos",
+          localField: "recruiterId",
+          foreignField: "userId",
+          as: "recruiter",
+        },
+      },
+      { $unwind: "$recruiter" },
+      {
+        $match: {
+          [user.type === "recruiter" ? "recruiterId" : "userId"]: user._id,
+        },
+      },
+      {
+        $sort: {
+          dateOfApplication: -1,
+        },
+      },
+    ];
+    const applications = await Application.aggregate(pipeline);
+    res.json(applications);
+  }catch(err){
+    res.status(400).json(err)
+  }
+  });
+
+// this function will get all the applicant list for a job of a recruiter
+router.get("/applicants", jwtAuth, async (req, res) => {
+  const user = req.user;
+  if(user.type !== "recruiter"){
+    return res.status(401).json({
+      message: "You don't have permissions to view applicants",
+    });
+  }
+  try {
+    let findParams = {
+      recruiterId: user._id,
+    };
+
+    if (req.query.jobId) {
+      findParams.jobId = new mongoose.Types.ObjectId(req.query.jobId);
+    }
+
+    if (req.query.status) {
+      if (Array.isArray(req.query.status)) {
+        findParams.status = { $in: req.query.status };
+      } else {
+        findParams.status = req.query.status;
+      }
+    }
+
+    let sortParams = {};
+
+    if (!req.query.asc && !req.query.desc) {
+      sortParams = { _id: 1 };
+    }
+
+    if (req.query.asc) {
+      if (Array.isArray(req.query.asc)) {
+        req.query.asc.forEach((key) => {
+          sortParams[key] = 1;
+        });
+      } else {
+        sortParams[req.query.asc] = 1;
+      }
+    }
+
+    if (req.query.desc) {
+      if (Array.isArray(req.query.desc)) {
+        req.query.desc.forEach((key) => {
+          sortParams[key] = -1;
+        });
+      } else {
+        sortParams[req.query.desc] = -1;
+      }
+    }
+    console.log(findParams);
+    console.log(sortParams);
+    console.log(req.query);
+    const pipeline = [
+      {
+        $lookup: {
+          from: "jobapplicantinfos",
+          localField: "userId",
+          foreignField: "userId",
+          as: "jobApplicant",
+        },
+      },
+      { $unwind: "$jobApplicant" },
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "jobId",
+          foreignField: "_id",
+          as: "job",
+        },
+      },
+      { $unwind: "$job" },
+      { $match: findParams },
+      { $sort: sortParams },
+    ];
+
+    const applications = await Application.aggregate(pipeline);
+
+    if (applications.length === 0) {
+      return res.status(404).json({
+        message: "No applicants found",
+      });
+    }
+    res.json(applications);
+
+    } catch (err) {
+      res.status(400).json(err);
+    }
+  });
+
+router.put("/applications/:id", jwtAuth, async (req, res) => {
+
+  });
   
   export default router;
   

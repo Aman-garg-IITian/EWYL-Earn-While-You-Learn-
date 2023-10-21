@@ -11,7 +11,7 @@ const router = express.Router();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const parentDirectory = path.resolve(__dirname, "..");
 const uploadsDirectory = path.resolve(parentDirectory, "public");
-
+let filename;
 
 // Modify the storage configuration to check for file extension
 const resumeStorage = multer.diskStorage({
@@ -26,6 +26,7 @@ const resumeStorage = multer.diskStorage({
       error.code = "INVALID_FILE_TYPE";
       return cb(error);
     }
+    filename = file.fieldname + "-" + Date.now() + ".pdf";
     cb(null, file.fieldname + "-" + Date.now() + ".pdf");
   },
 });
@@ -42,6 +43,7 @@ const profileStorage = multer.diskStorage({
       error.code = "INVALID_FILE_TYPE";
       return cb(error);
     }
+    filename = file.fieldname + "-" + Date.now() + "." + fileExtension;
     cb(null, file.fieldname + "-" + Date.now() + "." + fileExtension);
   },
 });
@@ -87,7 +89,8 @@ router.post("/resume", (req, res) => {
     } else {
       // File uploaded successfully
       res.send({
-        message: "Resume uploaded successfully"
+        message: "File uploaded successfully",
+        url: `/resume/${filename}`,
       });
     }
   });
