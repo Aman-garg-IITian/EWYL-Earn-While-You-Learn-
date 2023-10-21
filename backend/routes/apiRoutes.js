@@ -36,8 +36,8 @@ router.post("/jobs", jwtAuth, async (req, res)=>{
 
 router.get("/jobs", jwtAuth, async (req, res)=>{
     const user = req.user;
-    let findparams = {};
-    let sortparams = {};
+    let findParams = {};
+    let sortParams = {};
 
     if(user.type === "recruiter" && req.query.myjobs){
         findParams = {
@@ -156,6 +156,7 @@ router.get("/jobs", jwtAuth, async (req, res)=>{
     }
     try {
         const posts = await Job.aggregate(aggregationPipeline);
+        //console.log("length" + posts.length);
         if (posts.length === 0) {
           return res.status(404).json({
             message: "No job found",
@@ -163,6 +164,8 @@ router.get("/jobs", jwtAuth, async (req, res)=>{
         }
         res.json(posts);
     } catch (err) {
+        console.log("error encountered");
+        console.log(err);
         res.status(400).json(err);
     }     
 });
@@ -274,7 +277,7 @@ router.get("/user", jwtAuth, async (req, res) => {
       res.status(400).json(err);
     }
   });
-  router.get("/user/:id", jwtAuth, async (req, res) => {
+router.get("/user/:id", jwtAuth, async (req, res) => {
     try {
       const userData = await User.findOne({ _id: req.params.id }).exec();
       // console.log(userData);
@@ -311,10 +314,12 @@ router.get("/user", jwtAuth, async (req, res) => {
     }
   });
   
-  router.put("/user", jwtAuth, async (req, res) => {
-    // console.log(req)
+router.put("/user", jwtAuth, async (req, res) => {
+    
     const user = req.user;
     const data = req.body;
+    console.log(user)
+    console.log(data)
   
     try {
       if (user.type === "recruiter") {
@@ -381,6 +386,100 @@ router.get("/user", jwtAuth, async (req, res) => {
         });
       }
     } catch (err) {
+      console.log(err);
+      res.status(400).json(err);
+    }
+  });
+
+router.post("/jobs/:id/applications", jwtAuth, async (req, res) => {
+    const user = req.user;
+    console.log(user);
+    if(user.type !== "applicant"){
+        return res.status(401).json({
+            message: "You don't have permissions to apply for jobs",
+        });
+    }
+
+    try{
+      const data = req.body;
+      const userId  = user._id;
+      const jobId = req.params.id;
+      console.log(req.body);
+      const appliedApplication =  await Application.findOne({
+        userId: user._id,
+        jobId: jobId,
+        status: {
+          $nin: ["deleted", "accepted", "cancelled"],
+        },
+      }).exec();
+
+      if(appliedApplication){
+        return res.status(400).json({
+          message: "You have already applied for this job",
+        });
+      }
+      const job = await Job.findOne({_id: jobId}).exec();
+
+      if(!job){
+        return res.status(400).json({
+          message: "Job does not exist",
+        });
+      }
+
+      const activeApplicationCount = await Application.countDocuments({
+        jobId: job._id, 
+        status: { $nin: ["deleted", "accepted", "cancelled"] } 
+      }).exec();
+      
+      if(activeApplicationCount < job.maxApplicants){
+
+        const myActiveApplicationCount = await Application.countDocuments({
+          userId: user._id,
+          status: {
+            $nin: ["rejected", "deleted", "cancelled", "finished"],
+          },
+        }).exec();
+
+        if(myActiveApplicationCount < 5){
+          const acceptedJobs = await Application.countDocuments({
+            userId: user._id,
+            status: "accepted",
+          }).exec();
+
+          if(acceptedJobs === 0){
+            const application = new Application({
+              userId: user._id,
+              recruiterId: job.userId,
+              jobId: job._id,
+              status: "applied",
+              sop: data.sop,
+            });
+
+            await application.save();
+
+            return res.json({
+              message: "Application sent successfully",
+            });
+          }else{
+            return res.status(400).json({
+              message: "You already have an accepted job",
+            });
+          }
+        }else{
+          return res.status(400).json({
+            message: "You cannot have more than 10 active applications",
+          });
+        }
+      }else{
+        console.log(activeApplicationCount);
+        console.log(job.maxApplicants);
+        return res.status(400).json({
+          message: "Application limit reached for this job",
+        });
+      }
+    }catch(err){
+      console.log("This is the error##############################")
+      console.log(err);
       res.status(400).json(err);
     }
   });

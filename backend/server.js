@@ -43,7 +43,7 @@ async function initializeDirectories() {
 initializeDirectories();
 
 const app = express();
-const port = 4442;
+const port = 4444;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

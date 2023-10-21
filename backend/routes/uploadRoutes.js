@@ -49,12 +49,12 @@ const profileStorage = multer.diskStorage({
 const uploadResume = multer({
   storage: resumeStorage,
   limits: { fileSize: 1024 * 1024 * 10 }, // 10 MB file size limit for resume
-}).single("resume");
+}).single("file");
 
 const uploadProfile = multer({
   storage: profileStorage,
   limits: { fileSize: 1024 * 1024 * 10 }, // 5 MB file size limit for profile picture
-}).single("profile");
+}).single("file");
 
 // Error handling middleware for multer
 const handleMulterError = (err, req, res, next) => {
@@ -78,7 +78,7 @@ app.use("/", router);
 
 // Define your route on the router
 router.post("/resume", (req, res) => {
-  // console.log(req.file);
+  console.log(req.file);
   uploadResume(req, res, (err) => {
     if (err) {
       // Handle Multer errors and the file extension error using the error handling middleware
@@ -94,9 +94,11 @@ router.post("/resume", (req, res) => {
 });
 
 router.post("/profile", (req, res) => {
+  console.log(req.file);
   uploadProfile(req, res, (err) => {
     if (err) {
       // Handle Multer errors and the file extension error using the error handling middleware
+      console.log(err);
       handleMulterError(err, req, res);
     } else {
       // Profile picture uploaded successfully
