@@ -1,7 +1,7 @@
 import passport from "passport";
 
 const jwtAuth = async (req, res, next) => {
-  console.log(req)
+  //console.log(req);
   try {
     const user = await new Promise((resolve, reject) => {
       passport.authenticate("jwt", { session: false }, (err, user, info) => {

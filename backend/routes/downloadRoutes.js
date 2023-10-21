@@ -7,7 +7,7 @@ const router = express.Router();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 router.get("/resume/:file", async (req, res) => {
   console.log(req.params.file);
-  const address = path.join(__dirname, `../uploads/${req.params.file}`);
+  const address = path.join(__dirname, `../public/resume/${req.params.file}`);
   console.log(address);
   try {
     await fs.access(address, fs.F_OK);

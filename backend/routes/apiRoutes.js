@@ -185,7 +185,7 @@ router.get("/jobs/:id", jwtAuth, async (req, res) => {
 router.put("/jobs/:id", jwtAuth, async (req, res) => {
 
     const user = req.user;
-    console.log(req.user);
+    // console.log(req.user);
     if(user.type !== "recruiter"){
         return res.status(401).json({
             message: "You don't have permissions to update jobs",
@@ -199,9 +199,9 @@ router.put("/jobs/:id", jwtAuth, async (req, res) => {
             });
         }
         const data = req.body;
-        console.log(data);
+        // console.log(data);
         if(data.maxApplicants){
-            console.log(data.maxApplicants);
+            // console.log(data.maxApplicants);
             job.maxApplicants = data.maxApplicants;
         }
 
@@ -211,15 +211,15 @@ router.put("/jobs/:id", jwtAuth, async (req, res) => {
         if(data.deadline){
             job.deadline = data.deadline;
         }
-        console.log(typeof job);
+        // console.log(typeof job);
         await job.save();
-        console.log("done");
+        // console.log("done");
         res.json({
             message: "Job updated successfully",
         });
     } catch (err){
-        console.log("error");
-        console.log(err);
+        // console.log("error");
+        // console.log(err);
         res.status(400).json(err);
     }
 });
@@ -247,11 +247,11 @@ router.delete("/jobs/:id", jwtAuth, async(req, res)=>{
 });
 router.get("/user", jwtAuth, async (req, res) => {
     const user = req.user;
-    console.log(user);
+    // console.log(user);
     try {
       if (user.type === "recruiter") {
         const recruiter = await Recruiter.findOne({ userId: user._id });
-        console.log(recruiter);
+        // console.log(recruiter);
         if (recruiter === null) {
           return res.status(404).json({
             message: "User does not exist",
@@ -277,7 +277,7 @@ router.get("/user", jwtAuth, async (req, res) => {
   router.get("/user/:id", jwtAuth, async (req, res) => {
     try {
       const userData = await User.findOne({ _id: req.params.id }).exec();
-      console.log(userData);
+      // console.log(userData);
       if (userData === null) {
         return res.status(404).json({
           message: "User does not exist",
@@ -287,7 +287,7 @@ router.get("/user", jwtAuth, async (req, res) => {
       if (userData.type === "recruiter") {
 
         const recruiter = await Recruiter.findOne({ userId: userData._id }).exec();
-        console.log(recruiter);
+        // console.log(recruiter);
         if (recruiter === null) {
           return res.status(404).json({
             message: "User does not exist",
@@ -312,7 +312,7 @@ router.get("/user", jwtAuth, async (req, res) => {
   });
   
   router.put("/user", jwtAuth, async (req, res) => {
-    console.log(req)
+    // console.log(req)
     const user = req.user;
     const data = req.body;
   
@@ -322,7 +322,7 @@ router.get("/user", jwtAuth, async (req, res) => {
         const recruiter = await Recruiter.findOne({ userId: user._id }).exec();
   
         if (recruiter === null) {
-            console.log("updating recruiter");
+            // console.log("updating recruiter");
 
           return res.status(404).json({
             message: "User does not exist",
