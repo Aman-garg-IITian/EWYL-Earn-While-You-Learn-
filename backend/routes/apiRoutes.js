@@ -656,7 +656,140 @@ router.get("/applicants", jwtAuth, async (req, res) => {
   });
 
 router.put("/applications/:id", jwtAuth, async (req, res) => {
+  const user = req.user;
+  const id = req.params.id;
+  const status = req.body.status;
 
+  if(user.type === "recruiter"){
+    try{
+      if(status === "accepted"){
+        const application = await Application.findOne({
+          _id: id,
+          recruiterId: user._id,
+        }).exec();
+
+        if (application === null) {
+          return res.status(404).json({
+            message: "Application not found",
+          });
+        }
+
+        const job = await Job.findOne({
+          _id: application.jobId,
+          userId: user._id,
+        }).exec();
+
+        if (job === null) {
+          return res.status(404).json({
+            message: "Job not found",
+          });
+        }
+
+        const activeApplicationCount = await Application.countDocuments({
+          jobId: job._id,
+          status: "accepted",
+        }).exec();
+
+        if(activeApplicationCount < job.maxPositions){
+          application.status = status;
+          application.dateOfJoining = req.body.dateOfJoining;
+          const [savedApplication] = await Promise.all([
+            application.save(),
+            Application.updateMany(
+              {
+                _id: { $ne: application._id },
+                userId: application.userId,
+                status: {
+                  $nin: ["rejected", "deleted", "cancelled", "accepted", "finished"],
+                },
+              },
+              {
+                $set: {
+                  status: "cancelled",
+                },
+              },
+              { multi: true }
+            ),
+          ]);
+
+          if (status === "accepted") {
+            await Job.findOneAndUpdate(
+              {
+                _id: job._id,
+                userId: user._id,
+              },
+              {
+                $set: {
+                  acceptedCandidates: activeApplicationCount + 1,
+                },
+              }
+            );
+          }
+
+          return res.json({
+            message: `Application ${status} successfully`,
+          });
+        }else {
+          return res.status(400).json({
+            message: "All positions for this job are already filled",
+          });
+        }
+      }else{
+        const updatedApplication = await Application.findOneAndUpdate(
+          {
+            _id: id,
+            recruiterId: user._id,
+            status: {
+              $nin: ["rejected", "deleted", "cancelled"],
+            },
+          },
+          {
+            $set: {
+              status: status,
+            },
+          }
+        );
+
+        if (updatedApplication === null) {
+          return res.status(400).json({
+            message: "Application status cannot be updated",
+          });
+        }
+
+        return res.json({
+          message: status === "finished" ? `Job ${status} successfully` : `Application ${status} successfully`,
+        });
+      }
+    }catch(err){
+      res.status(400).json(err);
+    }
+  }else{
+    if (status === "cancelled") {
+      try {
+        const updatedApplication = await Application.findOneAndUpdate(
+          {
+            _id: id,
+            userId: user._id,
+          },
+          {
+            $set: {
+              status: status,
+            },
+          }
+        );
+
+        return res.json({
+          message: `Application ${status} successfully`,
+        });
+      } catch (err) {
+        return res.status(400).json(err);
+      }
+    }else {
+      return res.status(401).json({
+        message: "You don't have permissions to update job status",
+      });
+    }
+  }
   });
 
 
