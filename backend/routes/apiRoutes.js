@@ -798,16 +798,20 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
   router.put("/rating", jwtAuth, async (req, res) => {
     const user = req.user;
     const data = req.body;
+
+    console.log("#########Rating##################")
+    console.log(data);
+    console.log(user);
   
     try {
       if (user.type === "recruiter") {
         // Can rate an applicant
-        const rating = await Rating.findOne({
+        let rating = await Rating.findOne({
           senderId: user._id,
           receiverId: data.applicantId,
           category: "applicant",
-        });
-  
+        }).exec();
+        
         if (rating === null) {
           console.log("new rating");
           const acceptedApplicant = await Application.countDocuments({
@@ -833,7 +837,7 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
             const result = await Rating.aggregate([
               {
                 $match: {
-                  receiverId: mongoose.Types.ObjectId(data.applicantId),
+                  receiverId: new mongoose.Types.ObjectId(data.applicantId),
                   category: "applicant",
                 },
               },
@@ -887,7 +891,7 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
           const result = await Rating.aggregate([
             {
               $match: {
-                receiverId: mongoose.Types.ObjectId(data.applicantId),
+                receiverId: new mongoose.Types.ObjectId(data.applicantId),
                 category: "applicant",
               },
             },
@@ -930,11 +934,11 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
         }
       } else {
         // An applicant can rate a job
-        const rating = await Rating.findOne({
+        let rating = await Rating.findOne({
           senderId: user._id,
           receiverId: data.jobId,
           category: "job",
-        });
+        }).exec();
   
         console.log(user._id);
         console.log(data.jobId);
@@ -965,7 +969,7 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
             const result = await Rating.aggregate([
               {
                 $match: {
-                  receiverId: mongoose.Types.ObjectId(data.jobId),
+                  receiverId: new mongoose.Types.ObjectId(data.jobId),
                   category: "job",
                 },
               },
@@ -1020,7 +1024,7 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
           const result = await Rating.aggregate([
             {
               $match: {
-                receiverId: mongoose.Types.ObjectId(data.jobId),
+                receiverId: new mongoose.Types.ObjectId(data.jobId),
                 category: "job",
               },
             },
@@ -1063,6 +1067,7 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
         }
       }
     } catch (err) {
+      console.log(err);
       res.status(400).json(err);
     }
   });
@@ -1074,7 +1079,7 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
         senderId: user._id,
         receiverId: req.query.id,
         category: user.type === "recruiter" ? "applicant" : "job",
-      });
+      }).exec();
   
       if (rating === null) {
         return res.json({
