@@ -9,6 +9,7 @@ import { useHistory } from "react-router-dom";
 
 import isAuth, { userType } from "../lib/isAuth";
 
+// Define your custom primary and secondary colors
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
