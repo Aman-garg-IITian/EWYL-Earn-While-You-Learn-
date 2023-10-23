@@ -157,11 +157,11 @@ router.get("/jobs", jwtAuth, async (req, res)=>{
     try {
         const posts = await Job.aggregate(aggregationPipeline);
         //console.log("length" + posts.length);
-        if (posts.length === 0) {
-          return res.status(404).json({
-            message: "No job found",
-          });
-        }
+        // if (posts.length === 0) {
+        //   return res.status(404).json({
+        //     message: "No job found",
+        //   });
+        // }
         res.json(posts);
     } catch (err) {
         console.log("error encountered");
@@ -643,11 +643,11 @@ router.get("/applicants", jwtAuth, async (req, res) => {
 
     const applications = await Application.aggregate(pipeline);
 
-    if (applications.length === 0) {
-      return res.status(404).json({
-        message: "No applicants found",
-      });
-    }
+    // if (applications.length === 0) {
+    //   return res.status(404).json({
+    //     message: "No applicants found",
+    //   });
+    // }
     res.json(applications);
 
     } catch (err) {

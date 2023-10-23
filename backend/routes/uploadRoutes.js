@@ -106,7 +106,8 @@ router.post("/profile", (req, res) => {
     } else {
       // Profile picture uploaded successfully
       res.send({
-        message: "Profile picture uploaded successfully"
+        message: "Profile picture uploaded successfully",
+        url: `/profile/${filename}`,
       });
     }
   });
