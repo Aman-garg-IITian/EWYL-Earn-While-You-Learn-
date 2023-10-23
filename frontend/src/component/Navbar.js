@@ -34,7 +34,7 @@ const Navbar = (props) => {
     <AppBar position="fixed">
       <Toolbar>
         <Typography variant="h6" className={classes.title}>
-          Earn While You Learn
+          <img src="/logo.png" alt="logo" style={{maxHeight: '60px',}} />
         </Typography>
         {isAuth() ? (
           userType() === "recruiter" ? (
