@@ -4,3 +4,5 @@ node_modules/
 
 backend/public/profile/*
 backend/public/resume/*
+
+frontend/.eslintcache
