@@ -4,6 +4,7 @@ import { Grid, makeStyles } from "@material-ui/core";
 
 import Welcome, { ErrorPage } from "./component/Welcome";
 import Navbar from "./component/Navbar";
+import Footer from "./component/Footer";
 import Login from "./component/Login";
 import Logout from "./component/Logout";
 import Signup from "./component/Signup";
@@ -90,6 +91,9 @@ function App() {
                 <ErrorPage />
               </Route>
             </Switch>
+          </Grid>
+          <Grid item xs>
+            <Footer />
           </Grid>
         </Grid>
         <MessagePopup

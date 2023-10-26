@@ -21,6 +21,12 @@ const PasswordInput = (props) => {
     event.preventDefault();
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && props.onEnterPress) {
+      props.onEnterPress(); // Call the provided function on Enter key press
+    }
+  };
+
   return (
     <>
       <FormControl variant="outlined" error={props.error ? props.error : null}>
@@ -43,6 +49,7 @@ const PasswordInput = (props) => {
           }
           value={props.value}
           onChange={(event) => props.onChange(event)}
+          onKeyDown={handleKeyDown} // Handle Enter key press
           labelWidth={props.labelWidth ? props.labelWidth : 70}
           className={props.className}
           onBlur={props.onBlur ? props.onBlur : null}

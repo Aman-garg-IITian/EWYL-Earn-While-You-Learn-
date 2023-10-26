@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import {
   Grid,
   TextField,
@@ -10,7 +10,7 @@ import {
   Input,
 } from "@material-ui/core";
 import axios from "axios";
-import { Redirect } from "react-router-dom";
+import { Redirect,Link } from "react-router-dom";
 import ChipInput from "material-ui-chip-input";
 import DescriptionIcon from "@material-ui/icons/Description";
 import FaceIcon from "@material-ui/icons/Face";
@@ -119,6 +119,7 @@ const Login = (props) => {
   const setPopup = useContext(SetPopupContext);
 
   const [loggedin, setLoggedin] = useState(isAuth());
+  const [emailVerified, setEmailVerified] = useState(false);
 
   const [signupDetails, setSignupDetails] = useState({
     type: "applicant",
@@ -319,9 +320,40 @@ const Login = (props) => {
       });
     }
   };
+  useEffect(() => {
+    const fetchEmailVerificationStatus = async () => {
+      try {
+        const response = await axios.get(apiList.checkEmailVerification);
+        setEmailVerified(response.data.verified);
+      } catch (error) {
+        // Handle any error that occurs during the verification check
+        console.error("Error checking email verification:", error);
+      }
+    };
+
+    fetchEmailVerificationStatus();
+  }, []);
 
   return loggedin ? (
-    <Redirect to="/" />
+    emailVerified ? (
+      <Redirect to="/Login" />
+    ) : (
+      <div>
+        <p>
+          Your email is not verified. Please check your email for a verification
+          link.
+        </p>
+        <Link to="/login">
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ display: "block", margin: "0 auto" }}
+          >
+            Go to Login
+          </Button>
+        </Link>
+      </div>
+    )
   ) : (
     <Paper elevation={3} className={classes.body}>
       <Grid container direction="column" spacing={4} alignItems="center">

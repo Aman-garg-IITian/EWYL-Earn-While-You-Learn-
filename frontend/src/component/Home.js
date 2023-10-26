@@ -276,11 +276,11 @@ const FilterPopup = (props) => {
               <Slider
                 valueLabelDisplay="auto"
                 valueLabelFormat={(value) => {
-                  return value * (100000 / 100);
+                  return value * (10000 / 100);
                 }}
                 marks={[
                   { value: 0, label: "0" },
-                  { value: 100, label: "100000" },
+                  { value: 100, label: "10000" },
                 ]}
                 value={searchOptions.salary}
                 onChange={(event, value) =>
@@ -299,7 +299,7 @@ const FilterPopup = (props) => {
             <Grid item xs={9}>
               <TextField
                 select
-                label="Duration"
+                label="Months"
                 variant="outlined"
                 fullWidth
                 value={searchOptions.duration}
@@ -310,7 +310,7 @@ const FilterPopup = (props) => {
                   })
                 }
               >
-                <MenuItem value="0">All</MenuItem>
+                <MenuItem value="0">Any</MenuItem>
                 <MenuItem value="1">1</MenuItem>
                 <MenuItem value="2">2</MenuItem>
                 <MenuItem value="3">3</MenuItem>

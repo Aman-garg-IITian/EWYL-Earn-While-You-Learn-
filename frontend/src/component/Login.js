@@ -103,6 +103,12 @@ const Login = (props) => {
     }
   };
 
+  // const handleEnterKey = (event) => {
+  //   if (event.key === "Enter") {
+  //     handleLogin();
+  //   }
+  // };
+
   return loggedin ? (
     <Redirect to="/" />
   ) : (
@@ -129,13 +135,14 @@ const Login = (props) => {
             value={loginDetails.password}
             onChange={(event) => handleInput("password", event.target.value)}
             className={classes.inputBox}
+            onEnterPress={handleLogin}
           />
         </Grid>
         <Grid item>
           <Button
             variant="contained"
             color="primary"
-            onClick={() => handleLogin()}
+            onClick={handleLogin}
             className={classes.submitButton}
           >
             Login
