@@ -61,6 +61,8 @@ app.use("/auth", authRoutes);
 app.use("/down",downloadRoutes);
 app.use("/up",uploadRoutes);
 app.use("/api", apiRoutes);
+// app.get('/verify', verifyMail); 
+
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}!`);
