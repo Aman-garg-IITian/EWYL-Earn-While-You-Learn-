@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { Grid, makeStyles } from "@material-ui/core";
 
@@ -18,6 +18,9 @@ import AcceptedApplicants from "./component/recruiter/AcceptedApplicants";
 import RecruiterProfile from "./component/recruiter/Profile";
 import MessagePopup from "./lib/MessagePopup";
 import isAuth, { userType } from "./lib/isAuth";
+import VerifyEmailWrapper from "./lib/VerifyEmailWrapper";
+import apiList from "./lib/apiList";
+
 
 const useStyles = makeStyles((theme) => ({
   body: {
@@ -35,6 +38,19 @@ const useStyles = makeStyles((theme) => ({
 export const SetPopupContext = createContext();
 
 function App() {
+  const [loggedin, setLoggedin] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+
+  useEffect(() => {
+    const fetchEmailVerificationStatus = async () => {
+      const response = await fetch(apiList.getEmailVerificationStatus);
+      const data = await response.json();
+      setLoggedin(data.loggedin);
+      setEmailVerified(data.emailVerified);
+    };
+    fetchEmailVerificationStatus();
+  }, []);
+
   const classes = useStyles();
   const [popup, setPopup] = useState({
     open: false,
@@ -51,23 +67,32 @@ function App() {
           <Grid item className={classes.body}>
             <Switch>
               <Route exact path="/">
+                <VerifyEmailWrapper>
                 <Welcome />
+                </VerifyEmailWrapper>
               </Route>
               <Route exact path="/login">
                 <Login />
               </Route>
+              
               <Route exact path="/signup">
                 <Signup />
               </Route>
-              <Route exact path="/logout">
-                <Logout />
-              </Route>
+                <Route exact path="/logout">
+                  <Logout />
+                </Route>
               <Route exact path="/home">
+                <VerifyEmailWrapper>
                 <Home />
+                </VerifyEmailWrapper>
               </Route>
+  
+              
               <Route exact path="/applications">
                 <Applications />
               </Route>
+  
+              
               <Route exact path="/profile">
                 {userType() === "recruiter" ? (
                   <RecruiterProfile />
@@ -75,6 +100,7 @@ function App() {
                   <Profile />
                 )}
               </Route>
+  
               <Route exact path="/addjob">
                 <CreateJobs />
               </Route>
@@ -90,6 +116,7 @@ function App() {
               <Route>
                 <ErrorPage />
               </Route>
+  
             </Switch>
           </Grid>
           <Grid item xs>

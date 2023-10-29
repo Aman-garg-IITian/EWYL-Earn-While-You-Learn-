@@ -119,7 +119,6 @@ const Login = (props) => {
   const setPopup = useContext(SetPopupContext);
 
   const [loggedin, setLoggedin] = useState(isAuth());
-  const [emailVerified, setEmailVerified] = useState(false);
 
   const [signupDetails, setSignupDetails] = useState({
     type: "applicant",
@@ -320,24 +319,24 @@ const Login = (props) => {
       });
     }
   };
-  useEffect(() => {
-    const fetchEmailVerificationStatus = async () => {
-      try {
-        const response = await axios.get(apiList.checkEmailVerification);
-        setEmailVerified(response.data.verified);
-      } catch (error) {
-        // Handle any error that occurs during the verification check
-        console.error("Error checking email verification:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchEmailVerificationStatus = async () => {
+  //     try {
+  //       const response = await axios.get(apiList.checkEmailVerification);
+  //       setEmailVerified(response.data.verified);
+  //     } catch (error) {
+  //       // Handle any error that occurs during the verification check
+  //       console.error("Error checking email verification:", error);
+  //     }
+  //   };
 
-    fetchEmailVerificationStatus();
-  }, []);
+  //   fetchEmailVerificationStatus();
+  // }, []);
 
   return loggedin ? (
-    emailVerified ? (
-      <Redirect to="/Login" />
-    ) : (
+    // emailVerified ? (
+    //   <Redirect to="/Login" />
+    // ) : (
       <div>
         <p>
           Your email is not verified. Please check your email for a verification
@@ -353,8 +352,8 @@ const Login = (props) => {
           </Button>
         </Link>
       </div>
-    )
-  ) : (
+  ) : 
+  (
     <Paper elevation={3} className={classes.body}>
       <Grid container direction="column" spacing={4} alignItems="center">
         <Grid item>
