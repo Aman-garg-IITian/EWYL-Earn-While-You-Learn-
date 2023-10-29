@@ -4,6 +4,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from 'url';
+import jwtAuth from "../lib/jwtAuth.js"
 
 const app = express();
 const router = express.Router();
@@ -11,6 +12,7 @@ const router = express.Router();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const parentDirectory = path.resolve(__dirname, "..");
 const uploadsDirectory = path.resolve(parentDirectory, "public");
+console.log(uploadsDirectory);
 let filename;
 
 // Modify the storage configuration to check for file extension
@@ -26,8 +28,9 @@ const resumeStorage = multer.diskStorage({
       error.code = "INVALID_FILE_TYPE";
       return cb(error);
     }
-    filename = file.fieldname + "-" + Date.now() + ".pdf";
-    cb(null, file.fieldname + "-" + Date.now() + ".pdf");
+    console.log(req.user.email);
+    filename = req.user.email.split("@")[0] + ".pdf";
+    cb(null, filename);
   },
 });
 
@@ -43,8 +46,9 @@ const profileStorage = multer.diskStorage({
       error.code = "INVALID_FILE_TYPE";
       return cb(error);
     }
-    filename = file.fieldname + "-" + Date.now() + "." + fileExtension;
-    cb(null, file.fieldname + "-" + Date.now() + "." + fileExtension);
+    console.log("profileee");
+    filename = req.user.email.split("@")[0] +"."+ "jpeg";
+    cb(null, filename);
   },
 });
 
@@ -79,8 +83,12 @@ const handleMulterError = (err, req, res, next) => {
 app.use("/", router);
 
 // Define your route on the router
-router.post("/resume", (req, res) => {
-  console.log(req.file);
+router.post("/resume",jwtAuth, (req, res) => {
+  console.log("this is the user", req.user);
+  console.log("helloooo", req.user.email);
+  const name = req.user.email.split("@")[0];
+  console.log(name);
+  //console.log(req.file);
   uploadResume(req, res, (err) => {
     if (err) {
       // Handle Multer errors and the file extension error using the error handling middleware
@@ -96,8 +104,8 @@ router.post("/resume", (req, res) => {
   });
 });
 
-router.post("/profile", (req, res) => {
-  console.log(req.file);
+router.post("/profile", jwtAuth, (req, res) => {
+  console.log("file", req.file);
   uploadProfile(req, res, (err) => {
     if (err) {
       // Handle Multer errors and the file extension error using the error handling middleware

@@ -9,6 +9,13 @@ let schema = new mongoose.Schema(
         unique: true,
         lowercase: true,
         required: true,
+        validate: {
+          validator: function (value) {
+            // Use a regular expression to check if the email has the desired domain
+            return /@iitjammu\.ac\.in$/.test(value);
+          },
+          message: 'Please use institute email-id',
+        },
       },
       password: {
         type: String,
