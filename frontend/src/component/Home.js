@@ -276,12 +276,15 @@ const FilterPopup = (props) => {
               <Slider
                 valueLabelDisplay="auto"
                 valueLabelFormat={(value) => {
-                  return value * (10000 / 100);
+                  return value;
                 }}
                 marks={[
                   { value: 0, label: "0" },
-                  { value: 100, label: "10000" },
+                  { value: 1000, label: "1000" },
                 ]}
+                min={0}
+                max={1000}
+                step={1}
                 value={searchOptions.salary}
                 onChange={(event, value) =>
                   setSearchOptions({

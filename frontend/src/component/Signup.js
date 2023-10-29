@@ -10,7 +10,7 @@ import {
   Input,
 } from "@material-ui/core";
 import axios from "axios";
-import { Redirect,Link } from "react-router-dom";
+import reactRouterDom, { Redirect,Link } from "react-router-dom";
 import ChipInput from "material-ui-chip-input";
 import DescriptionIcon from "@material-ui/icons/Description";
 import FaceIcon from "@material-ui/icons/Face";
@@ -119,6 +119,8 @@ const Login = (props) => {
   const setPopup = useContext(SetPopupContext);
 
   const [loggedin, setLoggedin] = useState(isAuth());
+  const [redirectToLogin, setRedirectToLogin] = useState(false);
+
 
   const [signupDetails, setSignupDetails] = useState({
     type: "applicant",
@@ -222,14 +224,15 @@ const Login = (props) => {
       axios
         .post(apiList.signup, updatedDetails)
         .then((response) => {
-          localStorage.setItem("token", response.data.token);
-          localStorage.setItem("type", response.data.type);
+          // localStorage.setItem("token", response.data.token);
+          // localStorage.setItem("type", response.data.type);
           setLoggedin(isAuth());
           setPopup({
             open: true,
             severity: "success",
-            message: "Logged in successfully",
+            message: "Verification link has been sent to your email",
           });
+          setRedirectToLogin(true);
           console.log(response);
         })
         .catch((err) => {
@@ -292,14 +295,16 @@ const Login = (props) => {
       axios
         .post(apiList.signup, updatedDetails)
         .then((response) => {
-          localStorage.setItem("token", response.data.token);
-          localStorage.setItem("type", response.data.type);
+          //localStorage.setItem("token", response.data.token);
+          //localStorage.setItem("type", response.data.type);
           setLoggedin(isAuth());
+          
           setPopup({
             open: true,
             severity: "success",
-            message: "Logged in successfully",
+            message: "Verification link has been sent to your email",
           });
+          setRedirectToLogin(true);
           console.log(response);
         })
         .catch((err) => {
@@ -319,41 +324,29 @@ const Login = (props) => {
       });
     }
   };
-  // useEffect(() => {
-  //   const fetchEmailVerificationStatus = async () => {
-  //     try {
-  //       const response = await axios.get(apiList.checkEmailVerification);
-  //       setEmailVerified(response.data.verified);
-  //     } catch (error) {
-  //       // Handle any error that occurs during the verification check
-  //       console.error("Error checking email verification:", error);
-  //     }
-  //   };
 
-  //   fetchEmailVerificationStatus();
-  // }, []);
-
-  return loggedin ? (
-    // emailVerified ? (
-    //   <Redirect to="/Login" />
-    // ) : (
-      <div>
-        <p>
-          Your email is not verified. Please check your email for a verification
-          link.
-        </p>
-        <Link to="/login">
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ display: "block", margin: "0 auto" }}
-          >
-            Go to Login
-          </Button>
-        </Link>
-      </div>
-  ) : 
-  (
+  return (loggedin) ? (
+    <Redirect to="/" /> 
+  ) : (
+    redirectToLogin ? (
+      (
+        <div>
+          <p>
+            Your email is not verified. Please check your email for a verification
+            link.
+          </p>
+          <Link to="/login">
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ display: "block", margin: "0 auto" }}
+            >
+              Go to Login
+            </Button>
+          </Link>
+        </div>
+      )
+    ):(
     <Paper elevation={3} className={classes.body}>
       <Grid container direction="column" spacing={4} alignItems="center">
         <Grid item>
@@ -521,6 +514,7 @@ const Login = (props) => {
         </Grid>
       </Grid>
     </Paper>
+  )
   );
 };
 
