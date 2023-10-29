@@ -20,7 +20,7 @@ import MessagePopup from "./lib/MessagePopup";
 import isAuth, { userType } from "./lib/isAuth";
 import VerifyEmailWrapper from "./lib/VerifyEmailWrapper";
 import apiList from "./lib/apiList";
-
+import Verify from "./lib/verification";
 
 const useStyles = makeStyles((theme) => ({
   body: {
@@ -77,6 +77,9 @@ function App() {
               
               <Route exact path="/signup">
                 <Signup />
+              </Route>
+              <Route exact path="/verify">
+                <Verify />
               </Route>
                 <Route exact path="/logout">
                   <Logout />

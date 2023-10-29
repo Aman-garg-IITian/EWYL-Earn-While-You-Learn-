@@ -1,6 +1,7 @@
 export const server = "http://localhost:4444";
 
 const apiList = {
+  verify: `${server}/auth/verify`,
   login: `${server}/auth/login`,
   signup: `${server}/auth/signup`,
   uploadResume: `${server}/up/resume`,
