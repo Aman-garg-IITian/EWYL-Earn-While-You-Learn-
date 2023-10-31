@@ -138,12 +138,15 @@ const ApplicationTile = (props) => {
           </Grid>
           <Grid item>Posted By: {application.recruiter.name}</Grid>
           <Grid item>Role : {application.job.jobType}</Grid>
-          <Grid item>Salary : &#8377; {application.job.salary} /hour</Grid>
+          <Grid item>Salary : &#8377; {application.job.salary} / hour</Grid>
           <Grid item>
             Duration :{" "}
             {application.job.duration !== 0
               ? `${application.job.duration} month`
               : `Flexible`}
+          </Grid>
+          <Grid item>
+            Note: {application.note !== "" ? application.note : "Not Submitted"}
           </Grid>
           <Grid item>
             {application.job.skillsets.map((skill) => (

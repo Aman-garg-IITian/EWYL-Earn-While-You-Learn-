@@ -342,7 +342,14 @@ const ApplicationTile = (props) => {
   const { application, getData } = props;
   const setPopup = useContext(SetPopupContext);
   const [open, setOpen] = useState(false);
-
+  const [note, setNote] = useState("");
+  const [openNote, setOpenNote] = useState(false);
+  const [status, setStatus] = useState("");
+  const handleCloseStatus = () => {
+    setOpenNote(false);
+    setNote("");
+    setStatus("");
+  };
   const appliedOn = new Date(application.dateOfApplication);
 
   const handleClose = () => {
@@ -397,6 +404,7 @@ const ApplicationTile = (props) => {
     const statusData = {
       status: status,
       dateOfJoining: new Date().toISOString(),
+      note: note,
     };
     axios
       .put(address, statusData, {
@@ -411,6 +419,8 @@ const ApplicationTile = (props) => {
           message: response.data.message,
         });
         getData();
+        handleClose();
+        handleCloseStatus();
       })
       .catch((err) => {
         setPopup({
@@ -419,10 +429,13 @@ const ApplicationTile = (props) => {
           message: err.response.data.message,
         });
         console.log(err.response);
+        handleClose();
+        handleCloseStatus();
       });
   };
 
   const buttonSet = {
+    
     applied: (
       <>
         <Grid item xs>
@@ -432,11 +445,16 @@ const ApplicationTile = (props) => {
               background: colorSet["shortlisted"],
               color: "#ffffff",
             }}
-            onClick={() => updateStatus("shortlisted")}
+            // onClick={() => updateStatus("shortlisted")}
+            onClick={() => {
+              setOpenNote(true);
+              setStatus("shortlisted")
+            }}
           >
             Shortlist
           </Button>
         </Grid>
+        
         <Grid item xs>
           <Button
             className={classes.statusBlock}
@@ -444,7 +462,11 @@ const ApplicationTile = (props) => {
               background: colorSet["rejected"],
               color: "#ffffff",
             }}
-            onClick={() => updateStatus("rejected")}
+            // onClick={() => updateStatus("rejected")}
+            onClick={() => {
+              setOpenNote(true);
+              setStatus("rejected")
+            }}
           >
             Reject
           </Button>
@@ -472,7 +494,11 @@ const ApplicationTile = (props) => {
               background: colorSet["rejected"],
               color: "#ffffff",
             }}
-            onClick={() => updateStatus("rejected")}
+            // onClick={() => updateStatus("rejected")}
+            onClick={() => {
+              setOpenNote(true);
+              setStatus("rejected")
+            }}
           >
             Reject
           </Button>
@@ -542,6 +568,7 @@ const ApplicationTile = (props) => {
   };
 
   return (
+
     <Paper className={classes.jobTileOuter} elevation={3}>
       <Grid container>
         <Grid
@@ -589,6 +616,9 @@ const ApplicationTile = (props) => {
             SOP: {application.sop !== "" ? application.sop : "Not Submitted"}
           </Grid>
           <Grid item>
+            Note: {application.note !== "" ? application.note : "Not Submitted"}
+          </Grid>
+          <Grid item>
             {application.jobApplicant.skills.map((skill) => (
               <Chip label={skill} style={{ marginRight: "2px" }} />
             ))}
@@ -627,6 +657,45 @@ const ApplicationTile = (props) => {
             color="primary"
             style={{ padding: "10px 50px" }}
             // onClick={() => changeRating()}
+          >
+            Submit
+          </Button>
+        </Paper>
+      </Modal>
+      <Modal open={openNote} onClose={handleCloseStatus} className={classes.popupDialog}>
+        <Paper
+          style={{
+            padding: "20px",
+            outline: "none",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            minWidth: "50%",
+            alignItems: "center",
+          }}
+        >
+          <TextField
+            label="Write Note, if any (upto 40 words)"
+            multiline
+            rows={8}
+            style={{ width: "100%", marginBottom: "30px" }}
+            variant="outlined"
+            value={note}
+            onChange={(event) => {
+              if (
+                event.target.value.split(" ").filter(function (n) {
+                  return n != "";
+                }).length <= 40
+              ) {
+                setNote(event.target.value);
+              }
+            }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ padding: "10px 50px" }}
+            onClick={() => updateStatus(status)}
           >
             Submit
           </Button>

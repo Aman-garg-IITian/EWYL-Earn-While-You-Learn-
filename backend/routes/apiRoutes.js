@@ -659,7 +659,8 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
   const user = req.user;
   const id = req.params.id;
   const status = req.body.status;
-
+  console.log(req.params);
+  console.log(req.body);
   if(user.type === "recruiter"){
     try{
       if(status === "accepted"){
@@ -746,6 +747,7 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
           {
             $set: {
               status: status,
+              note: req.body.note,
             },
           }
         );

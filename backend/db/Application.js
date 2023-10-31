@@ -52,6 +52,16 @@ let schema = new mongoose.Schema(
         msg: "Statement of purpose should not be greater than 250 words",
       },
     },
+    note: {
+      type: String,
+      default: "",
+      validate: {
+        validator: function (v) {
+          return v.split(" ").filter((ele) => ele != "").length <= 50;
+        },
+        msg: "Note should not be greater than 50 words",
+      },
+    },
   },
   { collation: { locale: "en" } }
 );
