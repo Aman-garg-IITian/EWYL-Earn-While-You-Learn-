@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
-import { Grid, makeStyles } from "@material-ui/core";
+import { Grid, makeStyles, createTheme, ThemeProvider } from "@material-ui/core";
 
 import Welcome, { ErrorPage } from "./component/Welcome";
 import Navbar from "./component/Navbar";
@@ -22,6 +22,16 @@ import VerifyEmailWrapper from "./lib/VerifyEmailWrapper";
 import apiList from "./lib/apiList";
 import Verify from "./lib/verification";
 
+const customTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#003F88", // Change to your primary color
+    },
+    secondary: {
+      main: "#007FC8", // Change to your secondary color
+    },
+  },
+});
 const useStyles = makeStyles((theme) => ({
   body: {
     display: "flex",
@@ -58,7 +68,9 @@ function App() {
     message: "",
   });
   return (
+    
     <BrowserRouter>
+    <ThemeProvider theme={customTheme}>
       <SetPopupContext.Provider value={setPopup}>
         <Grid container direction="column">
           <Grid item xs>
@@ -138,6 +150,7 @@ function App() {
           message={popup.message}
         />
       </SetPopupContext.Provider>
+    </ThemeProvider>
     </BrowserRouter>
   );
 }

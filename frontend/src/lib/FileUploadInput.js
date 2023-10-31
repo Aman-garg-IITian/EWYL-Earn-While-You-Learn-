@@ -58,7 +58,7 @@ const FileUploadInput = (props) => {
         <Grid item xs={3}>
           <Button
             variant="contained"
-            color="primary"
+            color="secondary"
             component="label"
             style={{ width: "100%", height: "100%" }}
           >
