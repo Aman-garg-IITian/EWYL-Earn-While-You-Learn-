@@ -99,6 +99,7 @@ const JobTile = (props) => {
   };
 
   const deadline = new Date(job.deadline).toLocaleDateString();
+  
 
   return (
     <Paper className={classes.jobTileOuter} elevation={3}>
@@ -111,7 +112,7 @@ const JobTile = (props) => {
             <Rating value={job.rating !== -1 ? job.rating : null} readOnly />
           </Grid>
           <Grid item>Role : {job.jobType}</Grid>
-          <Grid item>Salary : &#8377; {job.salary} per month</Grid>
+          <Grid item>Salary : &#8377; {job.salary} /hour</Grid>
           <Grid item>
             Duration :{" "}
             {job.duration !== 0 ? `${job.duration} month` : `Flexible`}
@@ -182,7 +183,10 @@ const JobTile = (props) => {
   );
 };
 
+
 const FilterPopup = (props) => {
+  const [minSal, setMinSalary] = useState(0);
+  const [maxSal, setMaxSalary] = useState(1000);
   const classes = useStyles();
   const { open, handleClose, searchOptions, setSearchOptions, getData } = props;
   return (
@@ -210,8 +214,8 @@ const FilterPopup = (props) => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      name="fullTime"
-                      checked={searchOptions.jobType.fullTime}
+                      name="Consultancy"
+                      checked={searchOptions.jobType.Consultancy}
                       onChange={(event) => {
                         setSearchOptions({
                           ...searchOptions,
@@ -223,15 +227,15 @@ const FilterPopup = (props) => {
                       }}
                     />
                   }
-                  label="Full Time"
+                  label="Consultancy"
                 />
               </Grid>
               <Grid item>
                 <FormControlLabel
                   control={
                     <Checkbox
-                      name="partTime"
-                      checked={searchOptions.jobType.partTime}
+                      name="Project"
+                      checked={searchOptions.jobType.Project}
                       onChange={(event) => {
                         setSearchOptions({
                           ...searchOptions,
@@ -243,15 +247,15 @@ const FilterPopup = (props) => {
                       }}
                     />
                   }
-                  label="Part Time"
+                  label="Project"
                 />
               </Grid>
               <Grid item>
                 <FormControlLabel
                   control={
                     <Checkbox
-                      name="wfh"
-                      checked={searchOptions.jobType.wfh}
+                      name="others"
+                      checked={searchOptions.jobType.others}
                       onChange={(event) => {
                         setSearchOptions({
                           ...searchOptions,
@@ -263,7 +267,7 @@ const FilterPopup = (props) => {
                       }}
                     />
                   }
-                  label="Work From Home"
+                  label="Others"
                 />
               </Grid>
             </Grid>
@@ -285,14 +289,51 @@ const FilterPopup = (props) => {
                 min={0}
                 max={1000}
                 step={1}
-                value={searchOptions.salary}
-                onChange={(event, value) =>
+                value={[minSal, maxSal]}
+                onChange={(event, value) => {
+                  setMinSalary(value[0]);
+                  setMaxSalary(value[1]);
                   setSearchOptions({
                     ...searchOptions,
                     salary: value,
-                  })
-                }
+                  });
+                }}
               />
+              <TextField
+                variant="outlined"
+                placeholder="Salary Range"
+                value={`${minSal === 0 ? "0" : minSal}-${
+                  maxSal === 0 ? "0" : maxSal
+                }`}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  const [min, max] = value
+                    .split("-")
+                    .map((v) => (v.trim() === "" ? 0 : parseInt(v)));
+
+                  if (!isNaN(min) && !isNaN(max)) {
+                    setMinSalary(min);
+                    setMaxSalary(max);
+                    setSearchOptions({
+                      ...searchOptions,
+                      salary: [min, max],
+                    });
+                  } else {
+                    setMinSalary(0);
+                    setMaxSalary(1000);
+                    setSearchOptions({
+                      ...searchOptions,
+                      salary: [0, 1000],
+                    });
+                  }
+                }}
+              />
+              {/* <TextField
+                type="number"
+                placeholder="Maximum"
+                value={maxSal}
+                onChange={(event) => setMaxSalary(Number(event.target.value))}
+              /> */}
             </Grid>
           </Grid>
           <Grid container item alignItems="center">
@@ -522,11 +563,11 @@ const Home = (props) => {
   const [searchOptions, setSearchOptions] = useState({
     query: "",
     jobType: {
-      fullTime: false,
-      partTime: false,
-      wfh: false,
+      Consultancy: false,
+      Project: false,
+      Others: false,
     },
-    salary: [0, 100],
+    salary: [0, 1000],
     duration: "0",
     sort: {
       salary: {
@@ -554,14 +595,14 @@ const Home = (props) => {
     if (searchOptions.query !== "") {
       searchParams = [...searchParams, `q=${searchOptions.query}`];
     }
-    if (searchOptions.jobType.fullTime) {
-      searchParams = [...searchParams, `jobType=Full%20Time`];
+    if (searchOptions.jobType.Consultancy) {
+      searchParams = [...searchParams, `jobType=Consultancy`];
     }
-    if (searchOptions.jobType.partTime) {
-      searchParams = [...searchParams, `jobType=Part%20Time`];
+    if (searchOptions.jobType.Project) {
+      searchParams = [...searchParams, `jobType=Project`];
     }
-    if (searchOptions.jobType.wfh) {
-      searchParams = [...searchParams, `jobType=Work%20From%20Home`];
+    if (searchOptions.jobType.Others) {
+      searchParams = [...searchParams, `jobType=Others`];
     }
     if (searchOptions.salary[0] != 0) {
       searchParams = [
@@ -569,7 +610,7 @@ const Home = (props) => {
         `salaryMin=${searchOptions.salary[0] * 1000}`,
       ];
     }
-    if (searchOptions.salary[1] != 100) {
+    if (searchOptions.salary[1] != 1000) {
       searchParams = [
         ...searchParams,
         `salaryMax=${searchOptions.salary[1] * 1000}`,

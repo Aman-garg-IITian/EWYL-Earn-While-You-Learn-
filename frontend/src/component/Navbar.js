@@ -73,7 +73,7 @@ const Navbar = (props) => {
           userType() === "recruiter" ? (
             <>
               <Button color="inherit" onClick={() => handleClick("/home")}>
-                Home
+                Jobs
               </Button>
               <Button color="inherit" onClick={() => handleClick("/addjob")}>
                 Add Jobs
@@ -102,7 +102,7 @@ const Navbar = (props) => {
           ) : (
             <>
               <Button color="inherit" onClick={() => handleClick("/home")}>
-                Home
+                Jobs
               </Button>
               <Button
                 color="inherit"

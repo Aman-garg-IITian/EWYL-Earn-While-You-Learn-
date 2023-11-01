@@ -158,7 +158,7 @@ const JobTile = (props) => {
             <Rating value={job.rating !== -1 ? job.rating : null} readOnly />
           </Grid>
           <Grid item>Role : {job.jobType}</Grid>
-          <Grid item>Salary : &#8377; {job.salary} per month</Grid>
+          <Grid item>Salary : &#8377; {job.salary} /hour</Grid>
           <Grid item>
             Duration :{" "}
             {job.duration !== 0 ? `${job.duration} month` : `Flexible`}
@@ -377,8 +377,8 @@ const FilterPopup = (props) => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      name="fullTime"
-                      checked={searchOptions.jobType.fullTime}
+                      name="Cunsultancy"
+                      checked={searchOptions.jobType.Consultancy}
                       onChange={(event) => {
                         setSearchOptions({
                           ...searchOptions,
@@ -390,15 +390,15 @@ const FilterPopup = (props) => {
                       }}
                     />
                   }
-                  label="Full Time"
+                  label="Consultancy"
                 />
               </Grid>
               <Grid item>
                 <FormControlLabel
                   control={
                     <Checkbox
-                      name="partTime"
-                      checked={searchOptions.jobType.partTime}
+                      name="Project"
+                      checked={searchOptions.jobType.Project}
                       onChange={(event) => {
                         setSearchOptions({
                           ...searchOptions,
@@ -410,15 +410,15 @@ const FilterPopup = (props) => {
                       }}
                     />
                   }
-                  label="Part Time"
+                  label="Project"
                 />
               </Grid>
               <Grid item>
                 <FormControlLabel
                   control={
                     <Checkbox
-                      name="wfh"
-                      checked={searchOptions.jobType.wfh}
+                      name="Others"
+                      checked={searchOptions.jobType.others}
                       onChange={(event) => {
                         setSearchOptions({
                           ...searchOptions,
@@ -430,7 +430,7 @@ const FilterPopup = (props) => {
                       }}
                     />
                   }
-                  label="Work From Home"
+                  label="Others"
                 />
               </Grid>
             </Grid>
@@ -686,9 +686,9 @@ const MyJobs = (props) => {
   const [searchOptions, setSearchOptions] = useState({
     query: "",
     jobType: {
-      fullTime: false,
-      partTime: false,
-      wfh: false,
+      Consultancy: false,
+      Project: false,
+      others: false,
     },
     salary: [0, 100],
     duration: "0",
@@ -718,14 +718,14 @@ const MyJobs = (props) => {
     if (searchOptions.query !== "") {
       searchParams = [...searchParams, `q=${searchOptions.query}`];
     }
-    if (searchOptions.jobType.fullTime) {
-      searchParams = [...searchParams, `jobType=Full%20Time`];
+    if (searchOptions.jobType.Consultancy) {
+      searchParams = [...searchParams, `jobType=Consultancy`];
     }
-    if (searchOptions.jobType.partTime) {
-      searchParams = [...searchParams, `jobType=Part%20Time`];
+    if (searchOptions.jobType.Project) {
+      searchParams = [...searchParams, `jobType=Project`];
     }
-    if (searchOptions.jobType.wfh) {
-      searchParams = [...searchParams, `jobType=Work%20From%20Home`];
+    if (searchOptions.jobType.others) {
+      searchParams = [...searchParams, `jobType=Others`];
     }
     if (searchOptions.salary[0] != 0) {
       searchParams = [

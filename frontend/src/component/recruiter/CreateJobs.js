@@ -41,7 +41,7 @@ const CreateJobs = (props) => {
       .toISOString()
       .substr(0, 16),
     skillsets: [],
-    jobType: "Full Time",
+    jobType: "Consultancy",
     duration: 0,
     salary: 0,
   });
@@ -75,7 +75,7 @@ const CreateJobs = (props) => {
             .toISOString()
             .substr(0, 16),
           skillsets: [],
-          jobType: "Full Time",
+          jobType: "Consultancy",
           duration: 0,
           salary: 0,
         });
@@ -166,9 +166,9 @@ const CreateJobs = (props) => {
                     }}
                     fullWidth
                   >
-                    <MenuItem value="Full Time">Full Time</MenuItem>
-                    <MenuItem value="Part Time">Part Time</MenuItem>
-                    <MenuItem value="Work From Home">Work From Home</MenuItem>
+                    <MenuItem value="Consultancy">Consultancy</MenuItem>
+                    <MenuItem value="Project">Project</MenuItem>
+                    <MenuItem value="Others">Others</MenuItem>
                   </TextField>
                 </Grid>
                 <Grid item>

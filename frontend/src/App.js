@@ -104,29 +104,41 @@ function App() {
   
               
               <Route exact path="/applications">
+                <VerifyEmailWrapper>
                 <Applications />
+                </VerifyEmailWrapper>
               </Route>
   
               
               <Route exact path="/profile">
+                <VerifyEmailWrapper> 
                 {userType() === "recruiter" ? (
                   <RecruiterProfile />
                 ) : (
                   <Profile />
                 )}
+                </VerifyEmailWrapper>
               </Route>
   
               <Route exact path="/addjob">
+                <VerifyEmailWrapper>
                 <CreateJobs />
+                </VerifyEmailWrapper>
               </Route>
               <Route exact path="/myjobs">
+                <VerifyEmailWrapper>
                 <MyJobs />
+                </VerifyEmailWrapper>
               </Route>
               <Route exact path="/job/applications/:jobId">
+                <VerifyEmailWrapper>
                 <JobApplications />
+                </VerifyEmailWrapper>
               </Route>
               <Route exact path="/employees">
+                <VerifyEmailWrapper>
                 <AcceptedApplicants />
+                </VerifyEmailWrapper>
               </Route>
               <Route>
                 <ErrorPage />
