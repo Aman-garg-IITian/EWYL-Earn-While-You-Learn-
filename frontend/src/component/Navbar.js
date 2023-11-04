@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-
+import apiList, { server } from "../lib/apiList";
 import isAuth, { userType } from "../lib/isAuth";
 
 // Define your custom primary and secondary colors
@@ -40,17 +40,8 @@ const useStyles = makeStyles((theme) => ({
 const Navbar = (props) => {
   const classes = useStyles();
   let history = useHistory();
-  const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const response = await fetch("/api/user");
-      const data = await response.json();
-      setUser(data);
-    };
-
-    fetchUser();
-  }, []);
+  
 
   const handleClick = (location) => {
     console.log(location);
@@ -84,17 +75,9 @@ const Navbar = (props) => {
               <Button color="inherit" onClick={() => handleClick("/employees")}>
                 Employees
               </Button>
-              {/* <Button color="inherit" onClick={() => handleClick("/profile")}>
+              <Button color="inherit" onClick={() => handleClick("/profile")}>
                 Profile
-              </Button> */}
-              {user && (
-                <div className={classes.userInfo}>
-                  <Typography variant="subtitle1" className={classes.userName}>
-                    {user.name}
-                  </Typography>
-                  <Avatar alt={user.name} src={user.photo} />
-                </div>
-              )}
+              </Button>
               <Button color="inherit" onClick={() => handleClick("/logout")}>
                 Logout
               </Button>
