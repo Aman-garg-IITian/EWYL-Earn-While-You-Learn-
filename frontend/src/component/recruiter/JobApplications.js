@@ -847,5 +847,7 @@ const JobApplications = (props) => {
     </>
   );
 };
+// Add a function to cancel the application
+
 
 export default JobApplications;

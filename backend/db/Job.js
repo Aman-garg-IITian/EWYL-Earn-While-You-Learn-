@@ -87,7 +87,11 @@ let schema = new mongoose.Schema(
           },
         ],
       },
-      skillsets: [String],
+       skillsets: {
+        type: [String], // An array of strings
+        // required: true,
+      },
+      
       jobType: {
         type: String,
         required: true,

@@ -38,7 +38,11 @@ let schema = new mongoose.Schema(
           },
         },
       ],
-      skills: [String],
+      // skills: [String],
+      skills: {
+        type: [String], // An array of strings
+        required: false,
+      },
       rating: {
         type: Number,
         max: 5.0,

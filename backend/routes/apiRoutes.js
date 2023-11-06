@@ -34,37 +34,73 @@ router.post("/jobs", jwtAuth, async (req, res)=>{
 });
 
 
+
 router.get("/jobs", jwtAuth, async (req, res)=>{
-    const user = req.user;
-    let findParams = {};
-    let sortParams = {};
+  const user = req.user;
+  let findParams = {};
+  let sortParams = {};
 
-    if(user.type === "recruiter" && req.query.myjobs){
-        findParams = {
-            ...findParams,
-            userId: user._id,
-        };
-    }
-
-    if(req.query.q){
-        findParams = {
-            ...findParams,
-            title: {
-                $regex: new RegExp(req.query.q, "i"),
-            },
-        };
-    }
-
-    if (req.query.jobType) {
-        let jobTypes = Array.isArray(req.query.jobType) ? req.query.jobType : [req.query.jobType];
-        findParams = {
+  if(user.type === "recruiter" && req.query.myjobs){
+      findParams = {
           ...findParams,
-          jobType: {
-            $in: jobTypes,
-          },
-        };
-      }
-    
+          userId: user._id,
+      };
+  }
+  console.log(req.query)
+  // if (req.query.q) {
+  //   findParams = {
+  //       $or: [
+  //           {
+  //               title: {
+  //                   $regex: new RegExp(req.query.q, "i"),
+  //               },
+  //           },
+  //           {
+  //               skillsets: {
+  //                   $elemMatch: {
+  //                     $in: [req.query.q],
+  //                   },
+  //               },
+  //           },
+  //       ],
+  //       ...findParams, // Include other parameters in your findParams object here
+  //   };}
+  if (req.query.q) {
+    const query = req.query.q;
+    const skillsets = query.split(',').map(skillset => skillset.trim()); // Assuming skillsets are comma-separated in the query
+  
+    const orConditions = [
+      {
+        title: {
+          $regex: new RegExp(query, "i"),
+        },
+      },
+      {
+        $or: skillsets.map(skillset => ({ skillsets: skillset })),
+      },
+    ];
+  
+    findParams = {
+      ...findParams,
+      $or: orConditions,
+    };
+  }
+  
+
+
+  
+
+  if (req.query.jobType) {
+      let jobTypes = Array.isArray(req.query.jobType) ? req.query.jobType : [req.query.jobType];
+      findParams = {
+        ...findParams,
+        jobType: {
+          $in: jobTypes,
+        },
+      };
+    }
+  
+  
     if (req.query.salaryMin && req.query.salaryMax) {
         findParams = {
             ...findParams,
@@ -1096,7 +1132,43 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
       return res.status(400).json(err);
     }
   });
-    
+  router.put("/applications/:id/cancel", jwtAuth, async (req, res) => {
+    const user = req.user;
+    const applicationId = req.params.id;
+
+    if (user.type !== "applicant") {
+        return res.status(401).json({
+            message: "You don't have permissions to cancel applications",
+        });
+    }
+
+    try {
+        const application = await Application.findOne({
+            _id: applicationId,
+            userId: user._id,
+            status: {
+                $in: ["applied", "accepted"],
+            },
+        }).exec();
+
+        if (!application) {
+            return res.status(404).json({
+                message: "Application not found or cannot be canceled",
+            });
+        }
+
+        // Update the application status to "cancelled"
+        application.status = "cancelled";
+        await application.save();
+
+        return res.json({
+            message: "Application canceled successfully",
+        });
+    } catch (err) {
+        res.status(400).json(err);
+    }
+});
+
 
   
   export default router;
