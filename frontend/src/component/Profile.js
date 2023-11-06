@@ -7,13 +7,14 @@ import {
   Paper,
   makeStyles,
   TextField,
+  Avatar,
 } from "@material-ui/core";
 import axios from "axios";
 import ChipInput from "material-ui-chip-input";
 import FileUploadInput from "../lib/FileUploadInput";
 import DescriptionIcon from "@material-ui/icons/Description";
 import FaceIcon from "@material-ui/icons/Face";
-
+import { server } from "../lib/apiList";
 import { SetPopupContext } from "../App";
 
 import apiList from "../lib/apiList";
@@ -28,6 +29,10 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     // padding: "30px",
+  },
+  avatar: {
+    width: theme.spacing(20),
+    height: theme.spacing(20),
   },
 }));
 
@@ -224,7 +229,12 @@ const Profile = (props) => {
         style={{ padding: "30px", minHeight: "93vh" }}
       >
         <Grid item>
-          <Typography variant="h2">Profile</Typography>
+          <Typography variant="h2">
+            <Avatar
+              src={`${server}/down/${profileDetails.profile}`}
+              className={classes.avatar}
+            />
+          </Typography>
         </Grid>
         <Grid item xs>
           <Paper

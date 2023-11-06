@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import apiList, { server } from "../lib/apiList";
 import isAuth, { userType } from "../lib/isAuth";
-
+import axios from "axios";
 // Define your custom primary and secondary colors
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,8 +39,27 @@ const useStyles = makeStyles((theme) => ({
 
 const Navbar = (props) => {
   const classes = useStyles();
+  const [profilePic, setProfileDetails] = useState(null);
   let history = useHistory();
+  useEffect(() => {
+    getData();
+  }, []);
 
+  const getData = () => {
+    axios
+      .get(apiList.user, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        setProfileDetails(response.data.profile);
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+      });
+  };
   
 
   const handleClick = (location) => {

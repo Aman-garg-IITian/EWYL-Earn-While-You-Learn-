@@ -33,6 +33,16 @@ const useStyles = makeStyles((theme) => ({
   body: {
     height: "inherit",
   },
+  customButton: {
+    backgroundColor: "#3f51b5", // Change as per your color scheme
+    color: "#fff",
+    "&:hover": {
+      backgroundColor: "#283593", // Darker shade for hover state
+    },
+    padding: theme.spacing(1, 3), // Padding: Vertical (1) , Horizontal (3)
+    margin: theme.spacing(1), // Margin
+    borderRadius: "4px", // Border Radius
+  },
   button: {
     width: "100%",
     height: "100%",
