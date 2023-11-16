@@ -693,6 +693,7 @@ const FilterPopup = (props) => {
 const MyJobs = (props) => {
   const [jobs, setJobs] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [page, setPage] = useState(1);
   const [searchOptions, setSearchOptions] = useState({
     query: "",
     jobType: {
@@ -794,6 +795,10 @@ const MyJobs = (props) => {
         });
       });
   };
+  const handlePageChange = (event, value) => {
+    setPage(value);
+    getData();
+  };
 
   return (
     <>
@@ -857,15 +862,22 @@ const MyJobs = (props) => {
           alignItems="stretch"
           justify="center"
         >
-          {jobs.length > 0 ? (
-            jobs.map((job) => {
-              return <JobTile job={job} getData={getData} />;
-            })
-          ) : (
+          {jobs.slice((page - 1) * 10, page * 10).map((job) => (
+            <JobTile key={job.id} job={job} getData={getData} />
+          ))}
+          {jobs.length === 0 && (
             <Typography variant="h5" style={{ textAlign: "center" }}>
               No jobs found
             </Typography>
           )}
+        </Grid>
+        <Grid item>
+          <Pagination
+            count={Math.ceil(jobs.length / 10)}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+          />
         </Grid>
       </Grid>
       <FilterPopup

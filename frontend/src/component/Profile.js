@@ -299,7 +299,7 @@ const Profile = (props) => {
               <Grid item>
                 <FileUploadInput
                   className={classes.inputBox}
-                  label="Profile Photo (.jpg/.png)"
+                  label="Profile Photo (.jpg/.jpeg/.png)"
                   icon={<FaceIcon />}
                   uploadTo={apiList.uploadProfileImage}
                   handleInput={handleInput}

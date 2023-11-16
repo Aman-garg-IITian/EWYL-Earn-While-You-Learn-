@@ -122,7 +122,7 @@ const CreateJobs = (props) => {
               >
                 <Grid item>
                   <TextField
-                    label="Title"
+                    label="Job Title"
                     value={jobDetails.title}
                     onChange={(event) =>
                       handleInput("title", event.target.value)
@@ -168,6 +168,7 @@ const CreateJobs = (props) => {
                   >
                     <MenuItem value="Consultancy">Consultancy</MenuItem>
                     <MenuItem value="Project">Project</MenuItem>
+                    {/* <MenuItem value="Tutorship">Tutorship</MenuItem> */}
                     <MenuItem value="Others">Others</MenuItem>
                   </TextField>
                 </Grid>

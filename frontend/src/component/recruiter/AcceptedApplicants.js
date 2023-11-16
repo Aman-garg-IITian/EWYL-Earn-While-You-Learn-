@@ -18,6 +18,7 @@ import {
   Avatar,
 } from "@material-ui/core";
 import { useParams } from "react-router-dom";
+import Pagination from "@material-ui/lab/Pagination";
 import Rating from "@material-ui/lab/Rating";
 import axios from "axios";
 import FilterListIcon from "@material-ui/icons/FilterList";
@@ -400,6 +401,7 @@ const ApplicationTile = (props) => {
   const [open, setOpen] = useState(false);
   const [openEndJob, setOpenEndJob] = useState(false);
   const [rating, setRating] = useState(application.jobApplicant.rating);
+  const [page, setPage] = useState(1);
 
   const appliedOn = new Date(application.dateOfApplication);
 
@@ -522,6 +524,11 @@ const ApplicationTile = (props) => {
       });
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+    getData();
+  };
+
   return (
     <Paper className={classes.jobTileOuter} elevation={3}>
       <Grid container>
@@ -534,6 +541,7 @@ const ApplicationTile = (props) => {
             alignItems: "center",
           }}
         >
+          
           <Avatar
             src={`${server}/down/${application.jobApplicant.profile}`}
             className={classes.avatar}
@@ -607,6 +615,7 @@ const ApplicationTile = (props) => {
             </Button>
           </Grid>
         </Grid>
+
       </Grid>
       <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
         <Paper
@@ -680,6 +689,7 @@ const ApplicationTile = (props) => {
                 Cancel
               </Button>
             </Grid>
+
           </Grid>
         </Paper>
       </Modal>
@@ -690,6 +700,7 @@ const ApplicationTile = (props) => {
 const AcceptedApplicants = (props) => {
   const setPopup = useContext(SetPopupContext);
   const [applications, setApplications] = useState([]);
+  const [page, setPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
   const [searchOptions, setSearchOptions] = useState({
     sort: {
@@ -765,6 +776,9 @@ const AcceptedApplicants = (props) => {
         });
       });
   };
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   return (
     <>
@@ -793,10 +807,9 @@ const AcceptedApplicants = (props) => {
           justify="center"
         >
           {applications.length > 0 ? (
-            applications.map((obj) => (
+            applications.slice((page - 1) * 10, page * 10).map((obj) => (
               <Grid item>
-                {/* {console.log(obj)} */}
-                <ApplicationTile application={obj} getData={getData} />
+                <ApplicationTile application={obj} />
               </Grid>
             ))
           ) : (
@@ -804,6 +817,14 @@ const AcceptedApplicants = (props) => {
               No Current Employees
             </Typography>
           )}
+        </Grid>
+        <Grid item>
+          <Pagination
+            count={Math.ceil(applications.length / 10)}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+          />
         </Grid>
       </Grid>
       <FilterPopup

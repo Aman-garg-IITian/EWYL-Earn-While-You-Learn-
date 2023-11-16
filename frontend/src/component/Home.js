@@ -29,6 +29,7 @@ import { SetPopupContext } from "../App";
 import apiList from "../lib/apiList";
 import { userType } from "../lib/isAuth";
 
+
 const useStyles = makeStyles((theme) => ({
   body: {
     height: "inherit",
@@ -50,6 +51,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
 }));
+
+
 
 const JobTile = (props) => {
   const classes = useStyles();
@@ -189,6 +192,7 @@ const FilterPopup = (props) => {
   const [maxSal, setMaxSalary] = useState(1000);
   const classes = useStyles();
   const { open, handleClose, searchOptions, setSearchOptions, getData } = props;
+  // console.log(searchOptions.jobType);
   return (
     <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
       <Paper
@@ -250,6 +254,26 @@ const FilterPopup = (props) => {
                   label="Project"
                 />
               </Grid>
+              {/* <Grid item>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="Tutorship"
+                      checked={searchOptions.jobType.Tutorship}
+                      onChange={(event) => {
+                        setSearchOptions({
+                          ...searchOptions,
+                          jobType: {
+                            ...searchOptions.jobType,
+                            [event.target.name]: event.target.checked,
+                          },
+                        });
+                      }}
+                    />
+                  }
+                  label="Tutorship"
+                />
+              </Grid> */}
               <Grid item>
                 <FormControlLabel
                   control={
@@ -560,6 +584,7 @@ const FilterPopup = (props) => {
 const Home = (props) => {
   const [jobs, setJobs] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [page, setPage] = useState(1);
   const [searchOptions, setSearchOptions] = useState({
     query: "",
     jobType: {
@@ -666,6 +691,10 @@ const Home = (props) => {
         });
       });
   };
+  const handlePageChange = (event, value) => {
+    setPage(value);
+    getData();
+  };
 
   return (
     <>
@@ -688,7 +717,7 @@ const Home = (props) => {
           </Grid>
           <Grid item xs>
             <TextField
-              label="Search Jobs"
+              label="Search Jobs (by Name and Skill)"
               value={searchOptions.query}
               onChange={(event) =>
                 setSearchOptions({
@@ -729,7 +758,25 @@ const Home = (props) => {
           alignItems="stretch"
           justify="center"
         >
-          {jobs.length > 0 ? (
+          {jobs.slice((page - 1) * 10, page * 10).map((job) => (
+            <JobTile key={job.id} job={job} />
+          ))}
+          {jobs.length === 0 && (
+            <Typography variant="h5" style={{ textAlign: "center" }}>
+              No jobs found
+            </Typography>
+          )}
+        </Grid>
+        <Grid item>
+          <Pagination
+            count={Math.ceil(jobs.length / 10)}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+          />
+        </Grid>
+        
+        {/* {jobs.length > 0 ? (
             jobs.map((job) => {
               return <JobTile job={job} />;
             })
@@ -738,10 +785,12 @@ const Home = (props) => {
               No jobs found
             </Typography>
           )}
-        </Grid>
+        </Grid> */}
+
         {/* <Grid item>
           <Pagination count={10} color="primary" />
         </Grid> */}
+
       </Grid>
       <FilterPopup
         open={filterOpen}

@@ -18,6 +18,7 @@ import {
 } from "@material-ui/core";
 import Rating from "@material-ui/lab/Rating";
 import axios from "axios";
+import Pagination from "@material-ui/lab/Pagination";
 
 import { SetPopupContext } from "../App";
 
@@ -223,9 +224,11 @@ const ApplicationTile = (props) => {
   );
 };
 
+
 const Applications = (props) => {
   const setPopup = useContext(SetPopupContext);
   const [applications, setApplications] = useState([]);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     getData();
@@ -252,6 +255,9 @@ const Applications = (props) => {
         });
       });
   };
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   return (
     <Grid
@@ -273,6 +279,11 @@ const Applications = (props) => {
         alignItems="stretch"
         justify="center"
       >
+        {applications.slice((page - 1) * 10, page * 10).map((obj) => (
+          <Grid item>
+            <ApplicationTile application={obj} />
+          </Grid>
+        ))}
         {applications.length > 0 ? (
           applications.map((obj) => (
             <Grid item>
@@ -284,6 +295,14 @@ const Applications = (props) => {
             No Applications Found
           </Typography>
         )}
+      </Grid>
+      <Grid item>
+        <Pagination
+          count={Math.ceil(applications.length / 10)}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+        />
       </Grid>
     </Grid>
   );

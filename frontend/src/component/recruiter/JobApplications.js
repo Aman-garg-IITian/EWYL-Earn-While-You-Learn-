@@ -20,6 +20,7 @@ import {
 import { useParams } from "react-router-dom";
 import Rating from "@material-ui/lab/Rating";
 import axios from "axios";
+import Pagination from "@material-ui/lab/Pagination";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
@@ -709,6 +710,7 @@ const JobApplications = (props) => {
   const setPopup = useContext(SetPopupContext);
   const [applications, setApplications] = useState([]);
   const { jobId } = useParams();
+  const [page, setPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
   const [searchOptions, setSearchOptions] = useState({
     status: {
@@ -794,6 +796,10 @@ const JobApplications = (props) => {
       });
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
   return (
     <>
       <Grid
@@ -832,6 +838,14 @@ const JobApplications = (props) => {
               No Applications Found
             </Typography>
           )}
+        </Grid>
+        <Grid item>
+          <Pagination
+            count={Math.ceil(applications.length / 10)}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+          />
         </Grid>
       </Grid>
       <FilterPopup
