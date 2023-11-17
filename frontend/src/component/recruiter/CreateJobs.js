@@ -168,7 +168,7 @@ const CreateJobs = (props) => {
                   >
                     <MenuItem value="Consultancy">Consultancy</MenuItem>
                     <MenuItem value="Project">Project</MenuItem>
-                    {/* <MenuItem value="Tutorship">Tutorship</MenuItem> */}
+                    <MenuItem value="Tutorship">Tutorship</MenuItem>
                     <MenuItem value="Others">Others</MenuItem>
                   </TextField>
                 </Grid>

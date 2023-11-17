@@ -254,7 +254,7 @@ const FilterPopup = (props) => {
                   label="Project"
                 />
               </Grid>
-              {/* <Grid item>
+              <Grid item>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -273,7 +273,7 @@ const FilterPopup = (props) => {
                   }
                   label="Tutorship"
                 />
-              </Grid> */}
+              </Grid>
               <Grid item>
                 <FormControlLabel
                   control={
@@ -590,6 +590,7 @@ const Home = (props) => {
     jobType: {
       Consultancy: false,
       Project: false,
+      Tutorship: false,
       Others: false,
     },
     salary: [0, 1000],
@@ -625,6 +626,9 @@ const Home = (props) => {
     }
     if (searchOptions.jobType.Project) {
       searchParams = [...searchParams, `jobType=Project`];
+    }
+    if (searchOptions.jobType.Tutorship) {
+      searchParams = [...searchParams, `jobType=Tutorship`];
     }
     if (searchOptions.jobType.Others) {
       searchParams = [...searchParams, `jobType=Others`];
