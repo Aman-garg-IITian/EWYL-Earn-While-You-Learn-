@@ -35,6 +35,13 @@ async function initializeDirectories() {
           await fs.mkdir(__dirname + "/public/resume");
         }
       }
+      try {
+        await fs.access(__dirname + "/public/MOM");
+      } catch (error) {
+        if (error.code === "ENOENT") {
+          await fs.mkdir(__dirname + "/public/MOM");
+        }
+      }
     
       try {
         await fs.access(__dirname +  "/public/profile");

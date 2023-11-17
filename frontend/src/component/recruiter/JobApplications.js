@@ -22,6 +22,8 @@ import Rating from "@material-ui/lab/Rating";
 import axios from "axios";
 import Pagination from "@material-ui/lab/Pagination";
 import FilterListIcon from "@material-ui/icons/FilterList";
+import FileUploadInput from "../../lib/FileUploadInput";
+import DescriptionIcon from "@material-ui/icons/Description";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 
@@ -345,9 +347,12 @@ const ApplicationTile = (props) => {
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
   const [openNote, setOpenNote] = useState(false);
+  const [mom, setMOM] = useState("");
+  const [openMOM, setOpenMOM] = useState(false);
   const [status, setStatus] = useState("");
   const handleCloseStatus = () => {
     setOpenNote(false);
+    setOpenMOM(false);
     setNote("");
     setStatus("");
   };
@@ -356,7 +361,9 @@ const ApplicationTile = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-
+  const handleInput = (key, value) => {
+    setMOM(value);
+  };
   const colorSet = {
     applied: "#3454D1",
     shortlisted: "#DC851F",
@@ -406,6 +413,7 @@ const ApplicationTile = (props) => {
       status: status,
       dateOfJoining: new Date().toISOString(),
       note: note,
+      mom: mom,
     };
     axios
       .put(address, statusData, {
@@ -483,7 +491,9 @@ const ApplicationTile = (props) => {
               background: colorSet["accepted"],
               color: "#ffffff",
             }}
-            onClick={() => updateStatus("accepted")}
+            onClick={() => {
+              setOpenMOM(true);
+              setStatus("accepted")}}
           >
             Accept
           </Button>
@@ -691,6 +701,36 @@ const ApplicationTile = (props) => {
                 setNote(event.target.value);
               }
             }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ padding: "10px 50px" }}
+            onClick={() => updateStatus(status)}
+          >
+            Submit
+          </Button>
+        </Paper>
+      </Modal>
+      <Modal open={openMOM} onClose={handleCloseStatus} className={classes.popupDialog}>
+        <Paper
+          style={{
+            padding: "20px",
+            outline: "none",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            minWidth: "50%",
+            alignItems: "center",
+          }}
+        >
+          <FileUploadInput
+            className={classes.inputBox}
+            label="MOM (.pdf)"
+            icon={<DescriptionIcon />}
+            uploadTo={apiList.uploadMOM}
+            handleInput={handleInput}
+            identifier={"MOM"}
           />
           <Button
             variant="contained"

@@ -81,9 +81,9 @@ let schema = new mongoose.Schema(
         validate: [
           {
             validator: function (value) {
-              return this.dateOfPosting < value;
+              return Date.now() < value;
             },
-            msg: "deadline should be greater than dateOfPosting",
+            msg: "deadline should be greater than current date",
           },
         ],
       },

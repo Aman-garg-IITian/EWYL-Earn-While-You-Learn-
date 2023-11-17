@@ -192,7 +192,7 @@ const FilterPopup = (props) => {
   const [maxSal, setMaxSalary] = useState(1000);
   const classes = useStyles();
   const { open, handleClose, searchOptions, setSearchOptions, getData } = props;
-  // console.log(searchOptions.jobType);
+  
   return (
     <Modal open={open} onClose={handleClose} className={classes.popupDialog}>
       <Paper
@@ -278,8 +278,28 @@ const FilterPopup = (props) => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      name="others"
-                      checked={searchOptions.jobType.others}
+                      name="Tutorship"
+                      checked={searchOptions.jobType.Tutorship}
+                      onChange={(event) => {
+                        setSearchOptions({
+                          ...searchOptions,
+                          jobType: {
+                            ...searchOptions.jobType,
+                            [event.target.name]: event.target.checked,
+                          },
+                        });
+                      }}
+                    />
+                  }
+                  label="Tutorship"
+                />
+              </Grid>
+              <Grid item>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="Others"
+                      checked={searchOptions.jobType.Others}
                       onChange={(event) => {
                         setSearchOptions({
                           ...searchOptions,

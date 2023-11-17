@@ -464,7 +464,7 @@ const ApplicationTile = (props) => {
       application.jobApplicant.resume &&
       application.jobApplicant.resume !== ""
     ) {
-      const address = `${server}${application.jobApplicant.resume}`;
+      const address = `${server}/down/${application.jobApplicant.resume}`;
       console.log(address);
       axios(address, {
         method: "GET",
@@ -488,6 +488,39 @@ const ApplicationTile = (props) => {
         open: true,
         severity: "error",
         message: "No resume found",
+      });
+    }
+  };
+
+  const getMOM = () => {
+    if (
+      application.mom &&
+      application.mom !== ""
+    ) {
+      const address = `${server}/down/${application.mom}`;
+      console.log(address);
+      axios(address, {
+        method: "GET",
+        responseType: "blob",
+      })
+        .then((response) => {
+          const file = new Blob([response.data], { type: "application/pdf" });
+          const fileURL = URL.createObjectURL(file);
+          window.open(fileURL);
+        })
+        .catch((error) => {
+          console.log(error);
+          setPopup({
+            open: true,
+            severity: "error",
+            message: "Error",
+          });
+        });
+    } else {
+      setPopup({
+        open: true,
+        severity: "error",
+        message: "No MOM found",
       });
     }
   };
@@ -602,6 +635,19 @@ const ApplicationTile = (props) => {
               End Job
             </Button>
           </Grid>
+          {application.status === "accepted" ||
+          application.status === "finished" ? (
+            <Grid item>
+            <Button
+              variant="contained"
+              className={classes.statusBlock}
+              color="secondary"
+              onClick={() => getMOM()}
+            >
+              Download MOM
+            </Button>
+          </Grid>
+          ) : null}
           <Grid item>
             <Button
               variant="contained"

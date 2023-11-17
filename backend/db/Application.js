@@ -62,6 +62,12 @@ let schema = new mongoose.Schema(
         msg: "Note should not be greater than 50 words",
       },
     },
+    mom: {
+      type: String,
+      required: function () {
+        return this.status === "accepted" || this.status === "finished";
+      },
+    }
   },
   { collation: { locale: "en" } }
 );

@@ -47,46 +47,32 @@ router.get("/jobs", jwtAuth, async (req, res)=>{
       };
   }
   console.log(req.query)
-  // if (req.query.q) {
-  //   findParams = {
-  //       $or: [
-  //           {
-  //               title: {
-  //                   $regex: new RegExp(req.query.q, "i"),
-  //               },
-  //           },
-  //           {
-  //               skillsets: {
-  //                   $elemMatch: {
-  //                     $in: [req.query.q],
-  //                   },
-  //               },
-  //           },
-  //       ],
-  //       ...findParams, // Include other parameters in your findParams object here
-  //   };}
   if (req.query.q) {
     const query = req.query.q;
-    const skillsets = query.split(',').map(skillset => skillset.trim()); // Assuming skillsets are comma-separated in the query
-  
+    const searchArray = query.split(',').map(item => item.trim());
+
+    const titleConditions = searchArray.map(item => ({
+      title: {
+        $regex: new RegExp(item, "i"),
+      },
+    }));
+
+    const skillsetsConditions = searchArray.map(item => ({
+      skillsets: {
+        $regex: new RegExp(item, "i"),
+      },
+    }));
+
     const orConditions = [
-      {
-        title: {
-          $regex: new RegExp(query, "i"),
-        },
-      },
-      {
-        $or: skillsets.map(skillset => ({ skillsets: skillset })),
-      },
+      ...titleConditions,
+      ...skillsetsConditions,
     ];
-  
+
     findParams = {
       ...findParams,
       $or: orConditions,
     };
   }
-  
-
 
   
 
@@ -239,6 +225,12 @@ router.put("/jobs/:id", jwtAuth, async (req, res) => {
         }
         const data = req.body;
         // console.log(data);
+        if(data.salary){
+            job.salary = data.salary;
+        }
+        if(data.duration){
+            job.duration = data.duration;
+        }
         if(data.maxApplicants){
             // console.log(data.maxApplicants);
             job.maxApplicants = data.maxApplicants;
@@ -269,6 +261,16 @@ router.delete("/jobs/:id", jwtAuth, async(req, res)=>{
         return res.status(401).json({
             message: "You don't have permissions to delete jobs",
         });
+    }
+    try{
+      const jobToDel = await Job.findOne({_id: req.params.id, userId: user.id}).exec();
+      if(jobToDel.acceptedCandidates > 0){
+        return res.status(401).json({
+          message: "You cannot delete a job with accepted candidates",
+        });
+      }
+    }catch(err){
+      res.status(400).json({err});
     }
     try{
         const job = await Job.findOneAndDelete({_id: req.params.id, userId: user.id});
@@ -520,34 +522,34 @@ router.post("/jobs/:id/applications", jwtAuth, async (req, res) => {
     }
   });
 
-router.get("/jobs/:id/applications", jwtAuth, async (req, res) => {
-  console.log("yes its important################");
-  const user = req.user;
-  console.log(req);
-  if(user.type !== "recruiter"){
-    return res.status(401).json({
-      message: "You don't have permissions to view applications",
-    });
-  }
-  const jobId = req.params.id;
+// router.get("/jobs/:id/applications", jwtAuth, async (req, res) => {
+//   console.log("yes its important################");
+//   const user = req.user;
+//   console.log(req);
+//   if(user.type !== "recruiter"){
+//     return res.status(401).json({
+//       message: "You don't have permissions to view applications",
+//     });
+//   }
+//   const jobId = req.params.id;
 
-  let findParams = {
-    jobId: jobId,
-    recruiterId: user._id,
-  };
-  let sortParams = {};
+//   let findParams = {
+//     jobId: jobId,
+//     recruiterId: user._id,
+//   };
+//   let sortParams = {};
 
-  if (req.query.status) {
-    findParams.status = req.query.status;
-  }
+//   if (req.query.status) {
+//     findParams.status = req.query.status;
+//   }
 
-  try{
-    const applications = await Application.find(findParams).exec();
-    res.json(applications);
-  }catch(err){
-    res.status(400).json(err);
-  }
-  });
+//   try{
+//     const applications = await Application.find(findParams).exec();
+//     res.json(applications);
+//   }catch(err){
+//     res.status(400).json(err);
+//   }
+//   });
 
 // this function gest the list of jobs for which a user had applied
 router.get("/applications", jwtAuth, async (req, res) => {
@@ -729,6 +731,7 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
 
         if(activeApplicationCount < job.maxPositions){
           application.status = status;
+          application.mom = req.body.mom;
           application.dateOfJoining = req.body.dateOfJoining;
           const [savedApplication] = await Promise.all([
             application.save(),

@@ -291,6 +291,39 @@ const JobTile = (props) => {
           >
             <Grid item>
               <TextField
+                label="Salary"
+                type="number"
+                variant="outlined"
+                value={jobDetails.salary}
+                onChange={(event) => {
+                  handleInput("salary", event.target.value);
+                }}
+                InputProps={{ inputProps: { min: 0 } }}
+                fullWidth
+              />
+            </Grid>
+            <Grid item>
+              <TextField
+                select
+                label="Duration"
+                variant="outlined"
+                value={jobDetails.duration}
+                onChange={(event) => {
+                  handleInput("duration", event.target.value);
+                }}
+                fullWidth
+              >
+                <MenuItem value={0}>Flexible</MenuItem>
+                <MenuItem value={1}>1 Month</MenuItem>
+                <MenuItem value={2}>2 Months</MenuItem>
+                <MenuItem value={3}>3 Months</MenuItem>
+                <MenuItem value={4}>4 Months</MenuItem>
+                <MenuItem value={5}>5 Months</MenuItem>
+                <MenuItem value={6}>6 Months</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item>
+              <TextField
                 label="Application Deadline"
                 type="datetime-local"
                 value={jobDetails.deadline.substr(0, 16)}

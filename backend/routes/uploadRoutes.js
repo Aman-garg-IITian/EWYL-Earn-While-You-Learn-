@@ -34,6 +34,28 @@ const resumeStorage = multer.diskStorage({
   },
 });
 
+const MOMStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(uploadsDirectory, "MOM"));
+  },
+  filename: (req, file, cb) => {
+    const fileExtension = file.originalname.split(".").pop().toLowerCase();
+    if (fileExtension !== "pdf") {
+      // If the file extension is not "pdf", handle it as an error
+      const error = new Error("MOM must be a PDF");
+      error.code = "INVALID_FILE_TYPE";
+      return cb(error);
+    }
+    console.log(req.user.email);
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().replace(/[:.]/g, '-');
+
+    filename = formattedDate + ".pdf";
+    console.log(filename);
+    cb(null, filename);
+  },
+});
+
 const profileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(uploadsDirectory, "profile"));
@@ -57,6 +79,11 @@ const uploadResume = multer({
   limits: { fileSize: 1024 * 1024 * 10 }, // 10 MB file size limit for resume
 }).single("file");
 
+const uploadMOM = multer({
+  storage: MOMStorage,
+  limits: { fileSize: 1024 * 1024 * 10 }, // 10 MB file size limit for MOM
+}).single("file");
+
 const uploadProfile = multer({
   storage: profileStorage,
   limits: { fileSize: 1024 * 1024 * 10 }, // 5 MB file size limit for profile picture
@@ -64,6 +91,7 @@ const uploadProfile = multer({
 
 // Error handling middleware for multer
 const handleMulterError = (err, req, res, next) => {
+  console.log(err);
   if (err.code === "INVALID_FILE_TYPE") {
     // Handle the error when the file is not a PDF
     res.status(400).json({ error: err.message });
@@ -99,6 +127,27 @@ router.post("/resume",jwtAuth, (req, res) => {
       res.send({
         message: "File uploaded successfully",
         url: `/resume/${filename}`,
+      });
+    }
+  });
+});
+
+router.post("/MOM",jwtAuth, (req, res) => {
+  console.log("this is the user", req.user);
+  console.log("helloooo", req.user.email);
+  const name = req.user.email.split("@")[0];
+  console.log(name);
+  //console.log(req.file);
+  uploadMOM(req, res, (err) => {
+    if (err) {
+      // Handle Multer errors and the file extension error using the error handling middleware
+      //console.log(err);
+      handleMulterError(err, req, res);
+    } else {
+      // File uploaded successfully
+      res.send({
+        message: "File uploaded successfully",
+        url: `/MOM/${filename}`,
       });
     }
   });

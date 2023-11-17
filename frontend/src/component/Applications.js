@@ -22,7 +22,7 @@ import Pagination from "@material-ui/lab/Pagination";
 
 import { SetPopupContext } from "../App";
 
-import apiList from "../lib/apiList";
+import apiList, {server} from "../lib/apiList";
 
 const useStyles = makeStyles((theme) => ({
   body: {
@@ -120,6 +120,39 @@ const ApplicationTile = (props) => {
     setOpen(false);
   };
 
+  const getMOM = () => {
+    if (
+      application.mom &&
+      application.mom !== ""
+    ) {
+      const address = `${server}/down/${application.mom}`;
+      console.log(address);
+      axios(address, {
+        method: "GET",
+        responseType: "blob",
+      })
+        .then((response) => {
+          const file = new Blob([response.data], { type: "application/pdf" });
+          const fileURL = URL.createObjectURL(file);
+          window.open(fileURL);
+        })
+        .catch((error) => {
+          console.log(error);
+          setPopup({
+            open: true,
+            severity: "error",
+            message: "Error",
+          });
+        });
+    } else {
+      setPopup({
+        open: true,
+        severity: "error",
+        message: "No MOM found",
+      });
+    }
+  };
+
   const colorSet = {
     applied: "#3454D1",
     shortlisted: "#DC851F",
@@ -174,6 +207,21 @@ const ApplicationTile = (props) => {
           </Grid>
           {application.status === "accepted" ||
           application.status === "finished" ? (
+            
+            <Grid item>
+              <Button
+                variant="contained"
+                color="secondary"
+                className={classes.statusBlock}
+                onClick={() => getMOM()}
+              >
+                Download MOM
+              </Button>
+            </Grid>
+          ) : null}
+          {application.status === "accepted" ||
+          application.status === "finished" ? (
+            
             <Grid item>
               <Button
                 variant="contained"
