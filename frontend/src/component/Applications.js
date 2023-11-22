@@ -16,6 +16,7 @@ import {
   MenuItem,
   Checkbox,
 } from "@material-ui/core";
+import { useParams } from "react-router-dom";
 import Rating from "@material-ui/lab/Rating";
 import axios from "axios";
 import Pagination from "@material-ui/lab/Pagination";
@@ -52,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ApplicationTile = (props) => {
   const classes = useStyles();
-  const { application } = props;
+  const { application, getData } = props;
   const setPopup = useContext(SetPopupContext);
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(application.job.rating);
@@ -73,7 +74,7 @@ const ApplicationTile = (props) => {
       })
       .catch((err) => {
         // console.log(err.response);
-        console.log(err.response.data);
+        console.log(err.response);
         setPopup({
           open: true,
           severity: "error",
@@ -152,6 +153,36 @@ const ApplicationTile = (props) => {
       });
     }
   };
+  const cancelApplication = () => {
+    const address = `${apiList.applications}/${application._id}/cancel`;
+    
+    axios
+      .put(
+        address,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+    .then((response) => {
+      setPopup({
+        open: true,
+        severity: "success",
+        message: response.data.message,
+      });
+      getData();
+    })
+    .catch((err) => {
+      console.log(err.response);
+      setPopup({
+        open: true,
+        severity: "error",
+        message: err.response.data.message,
+      });
+    });
+  };
 
   const colorSet = {
     applied: "#3454D1",
@@ -205,6 +236,20 @@ const ApplicationTile = (props) => {
               {application.status}
             </Paper>
           </Grid>
+          {application.status === "applied" ||
+          application.status === "shortlisted" ? (
+            
+            <Grid item>
+              <Button
+                variant="contained"
+                color="secondary"
+                className={classes.statusBlock}
+                onClick={() => cancelApplication()}
+              >
+                Cancel Application
+              </Button>
+            </Grid>
+          ) : null}
           {application.status === "accepted" ||
           application.status === "finished" ? (
             
@@ -329,7 +374,7 @@ const Applications = (props) => {
       >
         {applications.slice((page - 1) * 10, page * 10).map((obj) => (
           <Grid item>
-            <ApplicationTile application={obj} />
+            <ApplicationTile application={obj} getData={getData}/>
           </Grid>
         ))}
         {applications.length > 0 ? (

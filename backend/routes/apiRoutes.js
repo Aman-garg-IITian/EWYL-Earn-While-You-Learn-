@@ -1135,9 +1135,10 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
       return res.status(400).json(err);
     }
   });
-  router.put("/applications/:id/cancel", jwtAuth, async (req, res) => {
+router.put("/applications/:id/cancel", jwtAuth, async (req, res) => {
     const user = req.user;
     const applicationId = req.params.id;
+    console.log("request receievd");
 
     if (user.type !== "applicant") {
         return res.status(401).json({
@@ -1150,7 +1151,7 @@ router.put("/applications/:id", jwtAuth, async (req, res) => {
             _id: applicationId,
             userId: user._id,
             status: {
-                $in: ["applied", "accepted"],
+                $in: ["applied", "shortlisted"],
             },
         }).exec();
 

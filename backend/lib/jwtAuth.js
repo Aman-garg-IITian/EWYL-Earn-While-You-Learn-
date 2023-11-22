@@ -1,7 +1,8 @@
 import passport from "passport";
 
 const jwtAuth = async (req, res, next) => {
-  //console.log(req);
+  // console.log(req);
+  // console.log(req.body.headers);
   try {
     const user = await new Promise((resolve, reject) => {
       passport.authenticate("jwt", { session: false }, (err, user, info) => {
@@ -10,7 +11,7 @@ const jwtAuth = async (req, res, next) => {
         resolve(user);
       })(req, res, next);
     });
-
+    // console.log(user);
     if (!user) {
       return res.status(401).json({ message: "Unauthorized" });
     }

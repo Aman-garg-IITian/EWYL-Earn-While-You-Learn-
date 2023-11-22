@@ -547,6 +547,7 @@ const ApplicationTile = (props) => {
         getData();
       })
       .catch((err) => {
+        console.log("this is the errorr######", err);
         setPopup({
           open: true,
           severity: "error",
@@ -855,7 +856,7 @@ const AcceptedApplicants = (props) => {
           {applications.length > 0 ? (
             applications.slice((page - 1) * 10, page * 10).map((obj) => (
               <Grid item>
-                <ApplicationTile application={obj} />
+                <ApplicationTile application={obj} getData={getData}/>
               </Grid>
             ))
           ) : (
