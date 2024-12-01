@@ -1,4 +1,4 @@
-1. INTRODUCTION
+**INTRODUCTION**
 "Earn While You Learn" is essentially a job portal designed to make job hunting and learning go
 hand in hand. It's like a virtual space where students and teachers from IIT Jammu can meet up
 for job opportunities within the institute. Professors and staff can easily post jobs on this website,
@@ -6,7 +6,7 @@ and students can check them out and apply. It's a win-win – students get a cha
 studying, and teachers find talented folks within the IIT community. It's all about making job
 searches simpler and more connected to the school experience.
 
-2. PROJECT OVERVIEW
+**PROJECT OVERVIEW**
 The "Earn while you learn" website is a dynamic platform designed to bridge the gap
 between job seekers and recruiters within the academic community of IIT Jammu. The
 primary objective of this project is to create a user-friendly online space where students and
